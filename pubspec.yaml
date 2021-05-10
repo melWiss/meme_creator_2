@@ -12,14 +12,10 @@ dependencies:
     sdk: flutter
   screenshot: ^0.3.0
   http: ^0.13.2
-  flutter_multimedia_picker: ^1.0.3
-  gallery_saver:
-  path:
-  path_provider:
+  multi_media_picker:
+  image_save: ^4.0.1
+  rxdart:
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
