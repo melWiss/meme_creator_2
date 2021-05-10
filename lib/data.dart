@@ -3,9 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 class MemeData {
-  String title = "Meme title";
+  String title = "";
   List<Map<String, dynamic>> images = [];
   double padding = 5;
+  double titlePadding = 5;
   double borderRadius = 0;
   double shadowWidth = 0;
   Color shadowColor = Colors.black;
@@ -14,5 +15,62 @@ class MemeData {
   TextStyle titleStyle = TextStyle(
     fontSize: 30,
     fontWeight: FontWeight.bold,
+    color: Colors.black,
   );
 }
+
+// var captionsStyle = {
+//   'data': element.readAsBytesSync(),
+//   'index': i,
+//   'expanded': false,
+//   'topText': 'Top Meme text',
+//   'bottomText': 'Bottom Meme text',
+//   'topTextDirection': TextDirection.ltr,
+//   'bottomTextDirection': TextDirection.ltr,
+//   'topTextAlignment': TextAlign.center,
+//   'bottomTextAlignment': TextAlign.center,
+//   'topTextStyle': TextStyle(
+//     fontSize: 18,
+//     color: Colors.white,
+//     shadows: [
+//       Shadow(
+//         offset: Offset(1.12, 1.12),
+//         color: Colors.black,
+//       ),
+//       Shadow(
+//         offset: Offset(1.12, -1.12),
+//         color: Colors.black,
+//       ),
+//       Shadow(
+//         offset: Offset(-1.12, 1.12),
+//         color: Colors.black,
+//       ),
+//       Shadow(
+//         offset: Offset(-1.12, -1.12),
+//         color: Colors.black,
+//       ),
+//     ],
+//   ),
+//   'bottomTextStyle': TextStyle(
+//     fontSize: 18,
+//     color: Colors.white,
+//     shadows: [
+//       Shadow(
+//         offset: Offset(1.12, 1.12),
+//         color: Colors.black,
+//       ),
+//       Shadow(
+//         offset: Offset(1.12, -1.12),
+//         color: Colors.black,
+//       ),
+//       Shadow(
+//         offset: Offset(-1.12, 1.12),
+//         color: Colors.black,
+//       ),
+//       Shadow(
+//         offset: Offset(-1.12, -1.12),
+//         color: Colors.black,
+//       ),
+//     ],
+//   ),
+// };

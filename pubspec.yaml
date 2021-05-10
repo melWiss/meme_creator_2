@@ -15,6 +15,7 @@ dependencies:
   multi_media_picker:
   image_save: ^4.0.1
   rxdart:
+  flex_color_picker: ^2.0.1
 
 
 # For information on the generic Dart part of this file, see the
