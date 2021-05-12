@@ -16,6 +16,7 @@ dependencies:
   image_save: ^4.0.1
   rxdart:
   flex_color_picker: ^2.0.1
+  wc_flutter_share: ^0.4.0
 
 
 # For information on the generic Dart part of this file, see the

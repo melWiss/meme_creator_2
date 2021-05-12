@@ -15,6 +15,7 @@ import 'package:multi_media_picker/multi_media_picker.dart';
 import 'package:meme_creator_2/tools.dart';
 import 'package:meme_creator_2/widgets.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'data.dart';
 
@@ -637,8 +638,26 @@ class _MemeCreatorState extends State<MemeCreator> {
                             "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.jpeg")
                         .then((value) {
                       if (value) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("Meme saved Successfully!")));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Meme saved Successfully!"),
+                            duration: Duration(seconds: 5),
+                            action: SnackBarAction(
+                              label: "Share",
+                              textColor: Theme.of(context).primaryColor,
+                              onPressed: () {
+                                WcFlutterShare.share(
+                                  sharePopupTitle: "Share",
+                                  mimeType: "image/png",
+                                  text: memeTools.data.title,
+                                  subject: memeTools.data.title,
+                                  bytesOfFile: f,
+                                  fileName: "meme.png",
+                                );
+                              },
+                            ),
+                          ),
+                        );
                       }
                       setState(() {
                         loading = false;
