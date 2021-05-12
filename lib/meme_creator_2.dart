@@ -255,8 +255,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                   elevation: 4,
                                                   child: SwitchListTile(
                                                     title: Text('Bold?'),
-                                                    secondary: Icon(Icons
-                                                        .font_download_outlined),
+                                                    secondary:
+                                                        Icon(Icons.format_bold),
                                                     value: (meme.images[index][
                                                                     'topTextStyle']
                                                                 as TextStyle)
@@ -286,6 +286,52 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                                   ? FontWeight
                                                                       .bold
                                                                   : FontWeight
+                                                                      .normal);
+                                                      memeTools.sinkMeme(meme);
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Material(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  elevation: 4,
+                                                  child: SwitchListTile(
+                                                    title: Text('Italic?'),
+                                                    secondary: Icon(
+                                                        Icons.format_italic),
+                                                    value: (meme.images[index][
+                                                                    'topTextStyle']
+                                                                as TextStyle)
+                                                            .fontStyle ==
+                                                        FontStyle.italic,
+                                                    onChanged: (value) {
+                                                      meme.images[index][
+                                                          'topTextStyle'] = (meme
+                                                                          .images[
+                                                                      index][
+                                                                  'topTextStyle']
+                                                              as TextStyle)
+                                                          .copyWith(
+                                                              fontStyle: value
+                                                                  ? FontStyle
+                                                                      .italic
+                                                                  : FontStyle
+                                                                      .normal);
+                                                      meme.images[index][
+                                                          'bottomTextStyle'] = (meme
+                                                                          .images[
+                                                                      index][
+                                                                  'bottomTextStyle']
+                                                              as TextStyle)
+                                                          .copyWith(
+                                                              fontStyle: value
+                                                                  ? FontStyle
+                                                                      .italic
+                                                                  : FontStyle
                                                                       .normal);
                                                       memeTools.sinkMeme(meme);
                                                     },
@@ -807,8 +853,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                     elevation: 4,
                                                     child: SwitchListTile(
                                                       title: Text('Bold?'),
-                                                      secondary: Icon(Icons
-                                                          .font_download_outlined),
+                                                      secondary: Icon(
+                                                          Icons.format_bold),
                                                       value: meme.titleStyle
                                                               .fontWeight ==
                                                           FontWeight.bold,
@@ -820,6 +866,36 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                                     ? FontWeight
                                                                         .bold
                                                                     : FontWeight
+                                                                        .normal);
+                                                        memeTools
+                                                            .sinkMeme(meme);
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Material(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                    elevation: 4,
+                                                    child: SwitchListTile(
+                                                      title: Text('Italic?'),
+                                                      secondary: Icon(
+                                                          Icons.format_italic),
+                                                      value: meme.titleStyle
+                                                              .fontStyle ==
+                                                          FontStyle.italic,
+                                                      onChanged: (value) {
+                                                        meme.titleStyle = meme
+                                                            .titleStyle
+                                                            .copyWith(
+                                                                fontStyle: value
+                                                                    ? FontStyle
+                                                                        .italic
+                                                                    : FontStyle
                                                                         .normal);
                                                         memeTools
                                                             .sinkMeme(meme);
