@@ -57,6 +57,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     color: Colors.white,
+                    padding: EdgeInsets.all(meme.containerPadding),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -77,7 +78,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                           children: List.generate(
                             meme.images.length,
                             (index) => Padding(
-                              padding: EdgeInsets.all(meme.padding),
+                              padding: EdgeInsets.all(meme.imagesPadding),
                               child: ClipRRect(
                                 borderRadius:
                                     BorderRadius.circular(meme.borderRadius),
@@ -478,7 +479,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                       BorderRadius.circular(5),
                                                   elevation: 4,
                                                   child: ListTile(
-                                                    title: Text('Title Color'),
+                                                    title:
+                                                        Text('Captions Color'),
                                                     leading:
                                                         Icon(Icons.color_lens),
                                                     trailing: Container(
@@ -531,17 +533,19 @@ class _MemeCreatorState extends State<MemeCreator> {
                                               ? MediaQuery.of(context)
                                                       .size
                                                       .width -
-                                                  meme.padding * 2
+                                                  meme.imagesPadding * 2 -
+                                                  meme.containerPadding * 2
                                               : MediaQuery.of(context)
                                                           .size
                                                           .width *
                                                       .5 -
-                                                  meme.padding * 2,
+                                                  meme.imagesPadding * 2 -
+                                                  meme.containerPadding,
                                           height: MediaQuery.of(context)
                                                       .size
                                                       .height *
                                                   .25 -
-                                              meme.padding *
+                                              meme.imagesPadding *
                                                   2 *
                                                   meme.images.length,
                                           fit: BoxFit.contain,
@@ -552,12 +556,12 @@ class _MemeCreatorState extends State<MemeCreator> {
                                             ? MediaQuery.of(context)
                                                     .size
                                                     .width -
-                                                meme.padding * 2
+                                                meme.imagesPadding * 2
                                             : MediaQuery.of(context)
                                                         .size
                                                         .width *
                                                     .5 -
-                                                meme.padding * 2,
+                                                meme.imagesPadding * 2,
                                         top: 5,
                                         child: Text(
                                           meme.images[index]['topText'],
@@ -574,12 +578,12 @@ class _MemeCreatorState extends State<MemeCreator> {
                                             ? MediaQuery.of(context)
                                                     .size
                                                     .width -
-                                                meme.padding * 2
+                                                meme.imagesPadding * 2
                                             : MediaQuery.of(context)
                                                         .size
                                                         .width *
                                                     .5 -
-                                                meme.padding * 2,
+                                                meme.imagesPadding * 2,
                                         bottom: 5,
                                         child: Text(
                                           meme.images[index]['bottomText'],
@@ -1152,14 +1156,41 @@ class _MemeCreatorState extends State<MemeCreator> {
                               title: Text("Padding"),
                               leading: Icon(Icons.space_bar),
                               subtitle: Slider(
-                                value: memeTools.data.padding,
+                                value: memeTools.data.containerPadding,
                                 divisions: 20,
-                                label:
-                                    memeTools.data.padding.toInt().toString(),
+                                label: memeTools.data.containerPadding
+                                    .toInt()
+                                    .toString(),
                                 max: 20,
                                 min: 0,
                                 onChanged: (value) {
-                                  meme.padding = value;
+                                  meme.containerPadding = value;
+                                  memeTools.sinkMeme(meme);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          child: Material(
+                            elevation: 4,
+                            borderRadius: BorderRadius.circular(5),
+                            clipBehavior: Clip.antiAlias,
+                            child: ListTile(
+                              title: Text("Images Padding"),
+                              leading: Icon(Icons.image_aspect_ratio),
+                              subtitle: Slider(
+                                value: memeTools.data.imagesPadding,
+                                divisions: 20,
+                                label: memeTools.data.imagesPadding
+                                    .toInt()
+                                    .toString(),
+                                max: 20,
+                                min: 0,
+                                onChanged: (value) {
+                                  meme.imagesPadding = value;
                                   memeTools.sinkMeme(meme);
                                 },
                               ),

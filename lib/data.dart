@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 class MemeData {
   String title = "";
   List<Map<String, dynamic>> images = [];
-  double padding = 5;
+  double containerPadding = 5;
   double titlePadding = 5;
+  double imagesPadding = 5;
   double borderRadius = 0;
   double shadowWidth = 0;
   Color shadowColor = Colors.black;
