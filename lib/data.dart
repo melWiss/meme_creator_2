@@ -19,20 +19,6 @@ class MemeData {
     fontWeight: FontWeight.bold,
     color: Colors.black,
   );
-  // MemeData({
-  //   this.borderRadius,
-  //   this.containerPadding,
-  //   this.imageHeight,
-  //   this.images,
-  //   this.imagesPadding,
-  //   this.shadowColor,
-  //   this.shadowWidth,
-  //   this.title,
-  //   this.titleAlign,
-  //   this.titleDirection,
-  //   this.titlePadding,
-  //   this.titleStyle,
-  // });
 }
 
 // var captionsStyle = {
