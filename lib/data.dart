@@ -10,6 +10,7 @@ class MemeData {
   double imagesPadding = 5;
   double borderRadius = 0;
   double shadowWidth = 0;
+  double imageHeight = 25;
   Color shadowColor = Colors.black;
   TextAlign titleAlign = TextAlign.center;
   TextDirection titleDirection = TextDirection.ltr;
@@ -18,6 +19,20 @@ class MemeData {
     fontWeight: FontWeight.bold,
     color: Colors.black,
   );
+  // MemeData({
+  //   this.borderRadius,
+  //   this.containerPadding,
+  //   this.imageHeight,
+  //   this.images,
+  //   this.imagesPadding,
+  //   this.shadowColor,
+  //   this.shadowWidth,
+  //   this.title,
+  //   this.titleAlign,
+  //   this.titleDirection,
+  //   this.titlePadding,
+  //   this.titleStyle,
+  // });
 }
 
 // var captionsStyle = {
