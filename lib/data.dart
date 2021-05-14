@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class MemeData {
   String title = "";
   List<Map<String, dynamic>> images = [];
+  List<Map<String, dynamic>> floatingTexts = [];
   double containerPadding = 5;
   double titlePadding = 5;
   double imagesPadding = 5;
@@ -31,28 +32,28 @@ class MemeData {
 //   'bottomTextDirection': TextDirection.ltr,
 //   'topTextAlignment': TextAlign.center,
 //   'bottomTextAlignment': TextAlign.center,
-//   'topTextStyle': TextStyle(
-//     fontSize: 18,
-//     color: Colors.white,
-//     shadows: [
-//       Shadow(
-//         offset: Offset(1.12, 1.12),
-//         color: Colors.black,
-//       ),
-//       Shadow(
-//         offset: Offset(1.12, -1.12),
-//         color: Colors.black,
-//       ),
-//       Shadow(
-//         offset: Offset(-1.12, 1.12),
-//         color: Colors.black,
-//       ),
-//       Shadow(
-//         offset: Offset(-1.12, -1.12),
-//         color: Colors.black,
-//       ),
-//     ],
-//   ),
+  // 'topTextStyle': TextStyle(
+  //   fontSize: 18,
+  //   color: Colors.white,
+  //   shadows: [
+  //     Shadow(
+  //       offset: Offset(1.12, 1.12),
+  //       color: Colors.black,
+  //     ),
+  //     Shadow(
+  //       offset: Offset(1.12, -1.12),
+  //       color: Colors.black,
+  //     ),
+  //     Shadow(
+  //       offset: Offset(-1.12, 1.12),
+  //       color: Colors.black,
+  //     ),
+  //     Shadow(
+  //       offset: Offset(-1.12, -1.12),
+  //       color: Colors.black,
+  //     ),
+  //   ],
+  // ),
 //   'bottomTextStyle': TextStyle(
 //     fontSize: 18,
 //     color: Colors.white,

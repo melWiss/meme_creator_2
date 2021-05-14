@@ -29,6 +29,8 @@ class _MemeCreatorState extends State<MemeCreator> {
   ScreenshotController screenshotController = ScreenshotController();
   bool saveLoading = false;
   bool shareLoading = false;
+  GlobalKey canvasKey = GlobalKey();
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -37,10 +39,10 @@ class _MemeCreatorState extends State<MemeCreator> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureWidget<void>(
+    return FutureBuilder<void>(
       future:
           SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
-      widget: (context, data) => Scaffold(
+      builder: (context, snap) => Scaffold(
         body: Center(
           child: StreamWidget<MemeData>(
             stream: memeTools.stream,
@@ -58,6 +60,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                     ),
                   )
                 : SingleChildScrollView(
+                    controller: scrollController,
                     child: Padding(
                       padding: EdgeInsets.only(
                         top: MediaQuery.of(context).viewPadding.top,
@@ -65,655 +68,680 @@ class _MemeCreatorState extends State<MemeCreator> {
                       ),
                       child: Screenshot(
                         controller: screenshotController,
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          color: Colors.white,
-                          padding: EdgeInsets.all(meme.containerPadding),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              meme.title != ""
-                                  ? Padding(
-                                      padding:
-                                          EdgeInsets.all(meme.titlePadding),
-                                      child: Text(
-                                        meme.title,
-                                        style: meme.titleStyle,
-                                        textAlign: meme.titleAlign,
-                                        textDirection: meme.titleDirection,
-                                      ),
-                                    )
-                                  : Container(),
-                              Wrap(
-                                children: List.generate(
-                                  meme.images.length,
-                                  (index) => Padding(
-                                    padding: EdgeInsets.all(meme.imagesPadding),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                          meme.borderRadius),
-                                      clipBehavior: Clip.antiAlias,
-                                      child: InkWell(
-                                        onLongPress: () {
-                                          meme.images[index]['expanded'] =
-                                              !meme.images[index]['expanded'];
-                                          memeTools.sinkMeme(meme);
-                                        },
-                                        onDoubleTap: () {
-                                          meme.images.removeAt(index);
-                                          memeTools.sinkMeme(meme);
-                                        },
-                                        onTap: () {
-                                          showModalBottomSheet(
-                                            context: context,
-                                            clipBehavior: Clip.antiAlias,
-                                            backgroundColor: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(20),
-                                                topRight: Radius.circular(20),
+                        child: Stack(
+                          children: List.generate(
+                            meme.floatingTexts.length + 1,
+                            (index) {
+                              if (index == 0) {
+                                return Container(
+                                  key: canvasKey,
+                                  width: MediaQuery.of(context).size.width,
+                                  color: Colors.white,
+                                  padding:
+                                      EdgeInsets.all(meme.containerPadding),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      meme.title != ""
+                                          ? Padding(
+                                              padding: EdgeInsets.all(
+                                                  meme.titlePadding),
+                                              child: Text(
+                                                meme.title,
+                                                style: meme.titleStyle,
+                                                textAlign: meme.titleAlign,
+                                                textDirection:
+                                                    meme.titleDirection,
                                               ),
-                                            ),
-                                            isScrollControlled: false,
-                                            builder: (context) {
-                                              TextEditingController caption1 =
-                                                  TextEditingController(
-                                                      text: meme.images[index]
-                                                          ['topText']);
-                                              TextEditingController caption2 =
-                                                  TextEditingController(
-                                                      text: meme.images[index]
-                                                          ['bottomText']);
-                                              return StreamWidget<MemeData>(
-                                                stream: memeTools.stream,
-                                                widget: (context, meme) =>
-                                                    Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                        "Edit Captions",
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .headline4,
+                                            )
+                                          : Container(),
+                                      Wrap(
+                                        children: List.generate(
+                                          meme.images.length,
+                                          (index) => Padding(
+                                            padding: EdgeInsets.all(
+                                                meme.imagesPadding),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      meme.borderRadius),
+                                              clipBehavior: Clip.antiAlias,
+                                              child: InkWell(
+                                                onLongPress: () {
+                                                  meme.images[index]
+                                                          ['expanded'] =
+                                                      !meme.images[index]
+                                                          ['expanded'];
+                                                  memeTools.sinkMeme(meme);
+                                                },
+                                                onDoubleTap: () {
+                                                  meme.images.removeAt(index);
+                                                  memeTools.sinkMeme(meme);
+                                                },
+                                                onTap: () {
+                                                  showModalBottomSheet(
+                                                    context: context,
+                                                    clipBehavior:
+                                                        Clip.antiAlias,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        topLeft:
+                                                            Radius.circular(20),
+                                                        topRight:
+                                                            Radius.circular(20),
                                                       ),
                                                     ),
-                                                    Divider(
-                                                      indent:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              .2,
-                                                      endIndent:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              .2,
-                                                      color: Colors.black,
-                                                      thickness: 3,
+                                                    isScrollControlled: false,
+                                                    builder: (context) {
+                                                      TextEditingController
+                                                          caption1 =
+                                                          TextEditingController(
+                                                              text: meme.images[
+                                                                      index]
+                                                                  ['topText']);
+                                                      TextEditingController
+                                                          caption2 =
+                                                          TextEditingController(
+                                                              text: meme.images[
+                                                                      index][
+                                                                  'bottomText']);
+                                                      return StreamWidget<
+                                                          MemeData>(
+                                                        stream:
+                                                            memeTools.stream,
+                                                        widget:
+                                                            (context, meme) =>
+                                                                Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Text(
+                                                                "Edit Captions",
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .headline4,
+                                                              ),
+                                                            ),
+                                                            Divider(
+                                                              indent: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  .2,
+                                                              endIndent:
+                                                                  MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      .2,
+                                                              color:
+                                                                  Colors.black,
+                                                              thickness: 3,
+                                                            ),
+                                                            Expanded(
+                                                              child: ListView(
+                                                                children: [
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        TextField(
+                                                                      controller:
+                                                                          caption1,
+                                                                      keyboardType:
+                                                                          TextInputType
+                                                                              .multiline,
+                                                                      textCapitalization:
+                                                                          TextCapitalization
+                                                                              .characters,
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        hintText:
+                                                                            "Caption #1",
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10),
+                                                                          borderSide:
+                                                                              BorderSide(color: Colors.black),
+                                                                        ),
+                                                                        contentPadding:
+                                                                            EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                        ),
+                                                                      ),
+                                                                      onChanged:
+                                                                          (value) {
+                                                                        meme.images[index]['topText'] =
+                                                                            value;
+                                                                        memeTools
+                                                                            .sinkMeme(meme);
+                                                                      },
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        TextField(
+                                                                      controller:
+                                                                          caption2,
+                                                                      keyboardType:
+                                                                          TextInputType
+                                                                              .multiline,
+                                                                      textCapitalization:
+                                                                          TextCapitalization
+                                                                              .characters,
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        hintText:
+                                                                            "Caption #2",
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10),
+                                                                          borderSide:
+                                                                              BorderSide(color: Colors.black),
+                                                                        ),
+                                                                        contentPadding:
+                                                                            EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                        ),
+                                                                      ),
+                                                                      onChanged:
+                                                                          (value) {
+                                                                        meme.images[index]['bottomText'] =
+                                                                            value;
+                                                                        memeTools
+                                                                            .sinkMeme(meme);
+                                                                      },
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        Material(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                      elevation:
+                                                                          4,
+                                                                      child:
+                                                                          ListTile(
+                                                                        title: Text(
+                                                                            'Caption Size'),
+                                                                        leading:
+                                                                            Icon(Icons.text_fields),
+                                                                        subtitle:
+                                                                            Slider(
+                                                                          value:
+                                                                              (meme.images[index]['topTextStyle'] as TextStyle).fontSize,
+                                                                          max:
+                                                                              50,
+                                                                          min:
+                                                                              10,
+                                                                          divisions:
+                                                                              40,
+                                                                          label: (meme.images[index]['topTextStyle'] as TextStyle)
+                                                                              .fontSize
+                                                                              .toInt()
+                                                                              .toString(),
+                                                                          onChanged:
+                                                                              (double value) {
+                                                                            meme.images[index]['topTextStyle'] =
+                                                                                (meme.images[index]['topTextStyle'] as TextStyle).copyWith(fontSize: value);
+                                                                            meme.images[index]['bottomTextStyle'] =
+                                                                                (meme.images[index]['bottomTextStyle'] as TextStyle).copyWith(fontSize: value);
+                                                                            memeTools.sinkMeme(meme);
+                                                                          },
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        Material(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                      elevation:
+                                                                          4,
+                                                                      child:
+                                                                          SwitchListTile(
+                                                                        title: Text(
+                                                                            'Bold?'),
+                                                                        secondary:
+                                                                            Icon(Icons.format_bold),
+                                                                        value: (meme.images[index]['topTextStyle'] as TextStyle).fontWeight ==
+                                                                            FontWeight.bold,
+                                                                        onChanged:
+                                                                            (value) {
+                                                                          meme.images[index]
+                                                                              [
+                                                                              'topTextStyle'] = (meme.images[index]['topTextStyle']
+                                                                                  as TextStyle)
+                                                                              .copyWith(fontWeight: value ? FontWeight.bold : FontWeight.normal);
+                                                                          meme.images[index]
+                                                                              [
+                                                                              'bottomTextStyle'] = (meme.images[index]['bottomTextStyle']
+                                                                                  as TextStyle)
+                                                                              .copyWith(fontWeight: value ? FontWeight.bold : FontWeight.normal);
+                                                                          memeTools
+                                                                              .sinkMeme(meme);
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        Material(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                      elevation:
+                                                                          4,
+                                                                      child:
+                                                                          SwitchListTile(
+                                                                        title: Text(
+                                                                            'Italic?'),
+                                                                        secondary:
+                                                                            Icon(Icons.format_italic),
+                                                                        value: (meme.images[index]['topTextStyle'] as TextStyle).fontStyle ==
+                                                                            FontStyle.italic,
+                                                                        onChanged:
+                                                                            (value) {
+                                                                          meme.images[index]
+                                                                              [
+                                                                              'topTextStyle'] = (meme.images[index]['topTextStyle']
+                                                                                  as TextStyle)
+                                                                              .copyWith(fontStyle: value ? FontStyle.italic : FontStyle.normal);
+                                                                          meme.images[index]
+                                                                              [
+                                                                              'bottomTextStyle'] = (meme.images[index]['bottomTextStyle']
+                                                                                  as TextStyle)
+                                                                              .copyWith(fontStyle: value ? FontStyle.italic : FontStyle.normal);
+                                                                          memeTools
+                                                                              .sinkMeme(meme);
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        Material(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                      elevation:
+                                                                          4,
+                                                                      child:
+                                                                          ListTile(
+                                                                        title: Text(
+                                                                            'Caption Direction'),
+                                                                        leading:
+                                                                            Icon(Icons.directions),
+                                                                        subtitle:
+                                                                            Row(
+                                                                          children: [
+                                                                            Text("Left to Right"),
+                                                                            Radio<TextDirection>(
+                                                                              groupValue: meme.images[index]['topTextDirection'],
+                                                                              value: TextDirection.ltr,
+                                                                              onChanged: (value) {
+                                                                                meme.images[index]['topTextDirection'] = value;
+                                                                                meme.images[index]['bottomTextDirection'] = value;
+                                                                                memeTools.sinkMeme(meme);
+                                                                              },
+                                                                            ),
+                                                                            Text("Right to Left"),
+                                                                            Radio<TextDirection>(
+                                                                              groupValue: meme.images[index]['topTextDirection'],
+                                                                              value: TextDirection.rtl,
+                                                                              onChanged: (value) {
+                                                                                meme.images[index]['topTextDirection'] = value;
+                                                                                meme.images[index]['bottomTextDirection'] = value;
+                                                                                memeTools.sinkMeme(meme);
+                                                                              },
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        Material(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                      elevation:
+                                                                          4,
+                                                                      child:
+                                                                          ListTile(
+                                                                        title: Text(
+                                                                            'Text Alignment'),
+                                                                        leading:
+                                                                            Icon(Icons.format_align_center),
+                                                                        subtitle:
+                                                                            Row(
+                                                                          children: [
+                                                                            Text("Start"),
+                                                                            Radio<TextAlign>(
+                                                                              groupValue: meme.images[index]['topTextAlignment'],
+                                                                              value: TextAlign.start,
+                                                                              onChanged: (value) {
+                                                                                meme.images[index]['topTextAlignment'] = value;
+                                                                                meme.images[index]['bottomTextAlignment'] = value;
+                                                                                memeTools.sinkMeme(meme);
+                                                                              },
+                                                                            ),
+                                                                            Text("Center"),
+                                                                            Radio<TextAlign>(
+                                                                              groupValue: meme.images[index]['topTextAlignment'],
+                                                                              value: TextAlign.center,
+                                                                              onChanged: (value) {
+                                                                                meme.images[index]['topTextAlignment'] = value;
+                                                                                meme.images[index]['bottomTextAlignment'] = value;
+                                                                                memeTools.sinkMeme(meme);
+                                                                              },
+                                                                            ),
+                                                                            Text("End"),
+                                                                            Radio<TextAlign>(
+                                                                              groupValue: meme.images[index]['topTextAlignment'],
+                                                                              value: TextAlign.end,
+                                                                              onChanged: (value) {
+                                                                                meme.images[index]['topTextAlignment'] = value;
+                                                                                meme.images[index]['bottomTextAlignment'] = value;
+                                                                                memeTools.sinkMeme(meme);
+                                                                              },
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        Material(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                      elevation:
+                                                                          4,
+                                                                      child:
+                                                                          ListTile(
+                                                                        title: Text(
+                                                                            'Captions Color'),
+                                                                        leading:
+                                                                            Icon(Icons.color_lens),
+                                                                        trailing:
+                                                                            Container(
+                                                                          height:
+                                                                              20,
+                                                                          width:
+                                                                              30,
+                                                                          color: meme
+                                                                              .images[index]['topTextStyle']
+                                                                              .color,
+                                                                        ),
+                                                                        onTap:
+                                                                            () async {
+                                                                          var color = await showColorPickerDialog(
+                                                                              context,
+                                                                              meme.titleStyle.color);
+                                                                          meme.images[index]
+                                                                              [
+                                                                              'topTextStyle'] = (meme.images[index]['topTextStyle']
+                                                                                  as TextStyle)
+                                                                              .copyWith(color: color);
+                                                                          meme.images[index]
+                                                                              [
+                                                                              'bottomTextStyle'] = (meme.images[index]['bottomTextStyle']
+                                                                                  as TextStyle)
+                                                                              .copyWith(color: color);
+                                                                          memeTools
+                                                                              .sinkMeme(meme);
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Stack(
+                                                  children: [
+                                                    InteractiveViewer(
+                                                      minScale: 1,
+                                                      maxScale: 5,
+                                                      child: Image.memory(
+                                                        meme.images[index]
+                                                            ['data'],
+                                                        width: meme.images[
+                                                                    index]
+                                                                ['expanded']
+                                                            ? MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width -
+                                                                meme.imagesPadding *
+                                                                    2 -
+                                                                meme.containerPadding *
+                                                                    2
+                                                            : MediaQuery.of(context)
+                                                                        .size
+                                                                        .width *
+                                                                    .5 -
+                                                                meme.imagesPadding *
+                                                                    2 -
+                                                                meme.containerPadding,
+                                                        height: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                .7 *
+                                                                meme
+                                                                    .imageHeight *
+                                                                .01 -
+                                                            meme.imagesPadding *
+                                                                2,
+                                                        fit: BoxFit.contain,
+                                                      ),
                                                     ),
-                                                    Expanded(
-                                                      child: ListView(
-                                                        children: [
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: TextField(
-                                                              controller:
-                                                                  caption1,
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .multiline,
-                                                              textCapitalization:
-                                                                  TextCapitalization
-                                                                      .characters,
-                                                              decoration:
-                                                                  InputDecoration(
-                                                                hintText:
-                                                                    "Caption #1",
-                                                                border:
-                                                                    OutlineInputBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
-                                                                  borderSide:
-                                                                      BorderSide(
-                                                                          color:
-                                                                              Colors.black),
-                                                                ),
-                                                                contentPadding:
-                                                                    EdgeInsets
-                                                                        .symmetric(
-                                                                  horizontal:
-                                                                      10,
-                                                                ),
-                                                              ),
-                                                              onChanged:
-                                                                  (value) {
-                                                                meme.images[index]
-                                                                        [
-                                                                        'topText'] =
-                                                                    value;
-                                                                memeTools
-                                                                    .sinkMeme(
-                                                                        meme);
-                                                              },
-                                                            ),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: TextField(
-                                                              controller:
-                                                                  caption2,
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .multiline,
-                                                              textCapitalization:
-                                                                  TextCapitalization
-                                                                      .characters,
-                                                              decoration:
-                                                                  InputDecoration(
-                                                                hintText:
-                                                                    "Caption #2",
-                                                                border:
-                                                                    OutlineInputBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
-                                                                  borderSide:
-                                                                      BorderSide(
-                                                                          color:
-                                                                              Colors.black),
-                                                                ),
-                                                                contentPadding:
-                                                                    EdgeInsets
-                                                                        .symmetric(
-                                                                  horizontal:
-                                                                      10,
-                                                                ),
-                                                              ),
-                                                              onChanged:
-                                                                  (value) {
-                                                                meme.images[index]
-                                                                        [
-                                                                        'bottomText'] =
-                                                                    value;
-                                                                memeTools
-                                                                    .sinkMeme(
-                                                                        meme);
-                                                              },
-                                                            ),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Material(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5),
-                                                              elevation: 4,
-                                                              child: ListTile(
-                                                                title: Text(
-                                                                    'Caption Size'),
-                                                                leading: Icon(Icons
-                                                                    .text_fields),
-                                                                subtitle:
-                                                                    Slider(
-                                                                  value: (meme.images[index]
-                                                                              [
-                                                                              'topTextStyle']
-                                                                          as TextStyle)
-                                                                      .fontSize,
-                                                                  max: 50,
-                                                                  min: 10,
-                                                                  divisions: 40,
-                                                                  label: (meme.images[index]
-                                                                              [
-                                                                              'topTextStyle']
-                                                                          as TextStyle)
-                                                                      .fontSize
-                                                                      .toInt()
-                                                                      .toString(),
-                                                                  onChanged:
-                                                                      (double
-                                                                          value) {
-                                                                    meme.images[
-                                                                            index]
-                                                                        [
-                                                                        'topTextStyle'] = (meme.images[index]['topTextStyle']
-                                                                            as TextStyle)
-                                                                        .copyWith(
-                                                                            fontSize:
-                                                                                value);
-                                                                    meme.images[
-                                                                            index]
-                                                                        [
-                                                                        'bottomTextStyle'] = (meme.images[index]['bottomTextStyle']
-                                                                            as TextStyle)
-                                                                        .copyWith(
-                                                                            fontSize:
-                                                                                value);
-                                                                    memeTools
-                                                                        .sinkMeme(
-                                                                            meme);
-                                                                  },
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Material(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5),
-                                                              elevation: 4,
-                                                              child:
-                                                                  SwitchListTile(
-                                                                title: Text(
-                                                                    'Bold?'),
-                                                                secondary: Icon(
-                                                                    Icons
-                                                                        .format_bold),
-                                                                value: (meme.images[index]['topTextStyle']
-                                                                            as TextStyle)
-                                                                        .fontWeight ==
-                                                                    FontWeight
-                                                                        .bold,
-                                                                onChanged:
-                                                                    (value) {
-                                                                  meme.images[
-                                                                          index]
-                                                                      ['topTextStyle'] = (meme.images[index]
-                                                                              [
-                                                                              'topTextStyle']
-                                                                          as TextStyle)
-                                                                      .copyWith(
-                                                                          fontWeight: value
-                                                                              ? FontWeight.bold
-                                                                              : FontWeight.normal);
-                                                                  meme.images[
-                                                                          index]
-                                                                      ['bottomTextStyle'] = (meme.images[index]
-                                                                              [
-                                                                              'bottomTextStyle']
-                                                                          as TextStyle)
-                                                                      .copyWith(
-                                                                          fontWeight: value
-                                                                              ? FontWeight.bold
-                                                                              : FontWeight.normal);
-                                                                  memeTools
-                                                                      .sinkMeme(
-                                                                          meme);
-                                                                },
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Material(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5),
-                                                              elevation: 4,
-                                                              child:
-                                                                  SwitchListTile(
-                                                                title: Text(
-                                                                    'Italic?'),
-                                                                secondary: Icon(
-                                                                    Icons
-                                                                        .format_italic),
-                                                                value: (meme.images[index]['topTextStyle']
-                                                                            as TextStyle)
-                                                                        .fontStyle ==
-                                                                    FontStyle
-                                                                        .italic,
-                                                                onChanged:
-                                                                    (value) {
-                                                                  meme.images[
-                                                                          index]
-                                                                      ['topTextStyle'] = (meme.images[index]
-                                                                              [
-                                                                              'topTextStyle']
-                                                                          as TextStyle)
-                                                                      .copyWith(
-                                                                          fontStyle: value
-                                                                              ? FontStyle.italic
-                                                                              : FontStyle.normal);
-                                                                  meme.images[
-                                                                          index]
-                                                                      ['bottomTextStyle'] = (meme.images[index]
-                                                                              [
-                                                                              'bottomTextStyle']
-                                                                          as TextStyle)
-                                                                      .copyWith(
-                                                                          fontStyle: value
-                                                                              ? FontStyle.italic
-                                                                              : FontStyle.normal);
-                                                                  memeTools
-                                                                      .sinkMeme(
-                                                                          meme);
-                                                                },
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Material(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5),
-                                                              elevation: 4,
-                                                              child: ListTile(
-                                                                title: Text(
-                                                                    'Caption Direction'),
-                                                                leading: Icon(Icons
-                                                                    .directions),
-                                                                subtitle: Row(
-                                                                  children: [
-                                                                    Text(
-                                                                        "Left to Right"),
-                                                                    Radio<
-                                                                        TextDirection>(
-                                                                      groupValue:
-                                                                          meme.images[index]
-                                                                              [
-                                                                              'topTextDirection'],
-                                                                      value: TextDirection
-                                                                          .ltr,
-                                                                      onChanged:
-                                                                          (value) {
-                                                                        meme.images[index]['topTextDirection'] =
-                                                                            value;
-                                                                        meme.images[index]['bottomTextDirection'] =
-                                                                            value;
-                                                                        memeTools
-                                                                            .sinkMeme(meme);
-                                                                      },
-                                                                    ),
-                                                                    Text(
-                                                                        "Right to Left"),
-                                                                    Radio<
-                                                                        TextDirection>(
-                                                                      groupValue:
-                                                                          meme.images[index]
-                                                                              [
-                                                                              'topTextDirection'],
-                                                                      value: TextDirection
-                                                                          .rtl,
-                                                                      onChanged:
-                                                                          (value) {
-                                                                        meme.images[index]['topTextDirection'] =
-                                                                            value;
-                                                                        meme.images[index]['bottomTextDirection'] =
-                                                                            value;
-                                                                        memeTools
-                                                                            .sinkMeme(meme);
-                                                                      },
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Material(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5),
-                                                              elevation: 4,
-                                                              child: ListTile(
-                                                                title: Text(
-                                                                    'Text Alignment'),
-                                                                leading: Icon(Icons
-                                                                    .format_align_center),
-                                                                subtitle: Row(
-                                                                  children: [
-                                                                    Text(
-                                                                        "Start"),
-                                                                    Radio<
-                                                                        TextAlign>(
-                                                                      groupValue:
-                                                                          meme.images[index]
-                                                                              [
-                                                                              'topTextAlignment'],
-                                                                      value: TextAlign
-                                                                          .start,
-                                                                      onChanged:
-                                                                          (value) {
-                                                                        meme.images[index]['topTextAlignment'] =
-                                                                            value;
-                                                                        meme.images[index]['bottomTextAlignment'] =
-                                                                            value;
-                                                                        memeTools
-                                                                            .sinkMeme(meme);
-                                                                      },
-                                                                    ),
-                                                                    Text(
-                                                                        "Center"),
-                                                                    Radio<
-                                                                        TextAlign>(
-                                                                      groupValue:
-                                                                          meme.images[index]
-                                                                              [
-                                                                              'topTextAlignment'],
-                                                                      value: TextAlign
-                                                                          .center,
-                                                                      onChanged:
-                                                                          (value) {
-                                                                        meme.images[index]['topTextAlignment'] =
-                                                                            value;
-                                                                        meme.images[index]['bottomTextAlignment'] =
-                                                                            value;
-                                                                        memeTools
-                                                                            .sinkMeme(meme);
-                                                                      },
-                                                                    ),
-                                                                    Text("End"),
-                                                                    Radio<
-                                                                        TextAlign>(
-                                                                      groupValue:
-                                                                          meme.images[index]
-                                                                              [
-                                                                              'topTextAlignment'],
-                                                                      value: TextAlign
-                                                                          .end,
-                                                                      onChanged:
-                                                                          (value) {
-                                                                        meme.images[index]['topTextAlignment'] =
-                                                                            value;
-                                                                        meme.images[index]['bottomTextAlignment'] =
-                                                                            value;
-                                                                        memeTools
-                                                                            .sinkMeme(meme);
-                                                                      },
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Material(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5),
-                                                              elevation: 4,
-                                                              child: ListTile(
-                                                                title: Text(
-                                                                    'Captions Color'),
-                                                                leading: Icon(Icons
-                                                                    .color_lens),
-                                                                trailing:
-                                                                    Container(
-                                                                  height: 20,
-                                                                  width: 30,
-                                                                  color: meme
-                                                                      .images[
-                                                                          index]
-                                                                          [
-                                                                          'topTextStyle']
-                                                                      .color,
-                                                                ),
-                                                                onTap:
-                                                                    () async {
-                                                                  var color = await showColorPickerDialog(
-                                                                      context,
-                                                                      meme.titleStyle
-                                                                          .color);
-                                                                  meme.images[
-                                                                          index]
-                                                                      ['topTextStyle'] = (meme.images[index]
-                                                                              [
-                                                                              'topTextStyle']
-                                                                          as TextStyle)
-                                                                      .copyWith(
-                                                                          color:
-                                                                              color);
-                                                                  meme.images[
-                                                                          index]
-                                                                      ['bottomTextStyle'] = (meme.images[index]
-                                                                              [
-                                                                              'bottomTextStyle']
-                                                                          as TextStyle)
-                                                                      .copyWith(
-                                                                          color:
-                                                                              color);
-                                                                  memeTools
-                                                                      .sinkMeme(
-                                                                          meme);
-                                                                },
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
+                                                    Positioned(
+                                                      width: meme.images[index]
+                                                              ['expanded']
+                                                          ? MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width -
+                                                              meme.imagesPadding *
+                                                                  2
+                                                          : MediaQuery.of(context)
+                                                                      .size
+                                                                      .width *
+                                                                  .5 -
+                                                              meme.imagesPadding *
+                                                                  2,
+                                                      top: 5,
+                                                      child: Text(
+                                                        meme.images[index]
+                                                            ['topText'],
+                                                        style: meme
+                                                                .images[index]
+                                                            ['topTextStyle'],
+                                                        textAlign: meme
+                                                                .images[index][
+                                                            'topTextAlignment'],
+                                                        textDirection: meme
+                                                                .images[index][
+                                                            'topTextDirection'],
+                                                      ),
+                                                    ),
+                                                    Positioned(
+                                                      width: meme.images[index]
+                                                              ['expanded']
+                                                          ? MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width -
+                                                              meme.imagesPadding *
+                                                                  2
+                                                          : MediaQuery.of(context)
+                                                                      .size
+                                                                      .width *
+                                                                  .5 -
+                                                              meme.imagesPadding *
+                                                                  2,
+                                                      bottom: 5,
+                                                      child: Text(
+                                                        meme.images[index]
+                                                            ['bottomText'],
+                                                        style: meme
+                                                                .images[index]
+                                                            ['bottomTextStyle'],
+                                                        textAlign: meme
+                                                                .images[index][
+                                                            'bottomTextAlignment'],
+                                                        textDirection: meme
+                                                                .images[index][
+                                                            'bottomTextDirection'],
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                              );
-                                            },
-                                          );
-                                        },
-                                        child: Stack(
-                                          children: [
-                                            InteractiveViewer(
-                                              maxScale: 5,
-                                              child: Image.memory(
-                                                meme.images[index]['data'],
-                                                width: meme.images[index]
-                                                        ['expanded']
-                                                    ? MediaQuery.of(context)
-                                                            .size
-                                                            .width -
-                                                        meme.imagesPadding * 2 -
-                                                        meme.containerPadding *
-                                                            2
-                                                    : MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            .5 -
-                                                        meme.imagesPadding * 2 -
-                                                        meme.containerPadding,
-                                                height: MediaQuery.of(context)
-                                                            .size
-                                                            .height *
-                                                        .7 *
-                                                        meme.imageHeight *
-                                                        .01 -
-                                                    meme.imagesPadding * 2,
-                                                fit: BoxFit.contain,
                                               ),
                                             ),
-                                            Positioned(
-                                              width: meme.images[index]
-                                                      ['expanded']
-                                                  ? MediaQuery.of(context)
-                                                          .size
-                                                          .width -
-                                                      meme.imagesPadding * 2
-                                                  : MediaQuery.of(context)
-                                                              .size
-                                                              .width *
-                                                          .5 -
-                                                      meme.imagesPadding * 2,
-                                              top: 5,
-                                              child: Text(
-                                                meme.images[index]['topText'],
-                                                style: meme.images[index]
-                                                    ['topTextStyle'],
-                                                textAlign: meme.images[index]
-                                                    ['topTextAlignment'],
-                                                textDirection:
-                                                    meme.images[index]
-                                                        ['topTextDirection'],
-                                              ),
-                                            ),
-                                            Positioned(
-                                              width: meme.images[index]
-                                                      ['expanded']
-                                                  ? MediaQuery.of(context)
-                                                          .size
-                                                          .width -
-                                                      meme.imagesPadding * 2
-                                                  : MediaQuery.of(context)
-                                                              .size
-                                                              .width *
-                                                          .5 -
-                                                      meme.imagesPadding * 2,
-                                              bottom: 5,
-                                              child: Text(
-                                                meme.images[index]
-                                                    ['bottomText'],
-                                                style: meme.images[index]
-                                                    ['bottomTextStyle'],
-                                                textAlign: meme.images[index]
-                                                    ['bottomTextAlignment'],
-                                                textDirection:
-                                                    meme.images[index]
-                                                        ['bottomTextDirection'],
-                                              ),
-                                            ),
-                                          ],
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ),
-                              ),
-                            ],
+                                );
+                              } else {
+                                return Positioned(
+                                  top: meme
+                                      .floatingTexts[index - 1]['offset'].dy,
+                                  left: meme
+                                      .floatingTexts[index - 1]['offset'].dx,
+                                  child: Draggable(
+                                    child: Text(
+                                      meme.floatingTexts[index - 1]['text'],
+                                      textAlign: meme.floatingTexts[index - 1]
+                                          ['textAlign'],
+                                      style: meme.floatingTexts[index - 1]
+                                          ['textStyle'],
+                                    ),
+                                    onDragUpdate: (details) {
+                                      var obj = canvasKey.currentContext;
+                                      var box =
+                                          obj.findRenderObject() as RenderBox;
+                                      print(box.size.height.toString() +
+                                          ", " +
+                                          details.localPosition.dy.toString() +
+                                          ", " +
+                                          MediaQuery.of(context)
+                                              .size
+                                              .height
+                                              .toString());
+                                      print(
+                                        details.localPosition.dy -
+                                            (MediaQuery.of(context)
+                                                        .size
+                                                        .height -
+                                                    box.size.height) /
+                                                2,
+                                      );
+                                      print(scrollController.offset);
+                                      Offset of;
+                                      if (MediaQuery.of(context).size.height >=
+                                          box.size.height) {
+                                        of = Offset(
+                                          details.localPosition.dx,
+                                          details.localPosition.dy -
+                                              (MediaQuery.of(context)
+                                                          .size
+                                                          .height -
+                                                      box.size.height) /
+                                                  2 +
+                                              MediaQuery.of(context)
+                                                  .viewPadding
+                                                  .top,
+                                        );
+                                      } else {
+                                        of = Offset(
+                                            details.localPosition.dx,
+                                            details.localPosition.dy +
+                                                scrollController.offset -
+                                                MediaQuery.of(context)
+                                                    .viewPadding
+                                                    .top
+                                            // box.size.height -
+                                            // MediaQuery.of(context)
+                                            //     .size
+                                            //     .height,
+                                            );
+                                      }
+                                      meme.floatingTexts[index - 1]['offset'] =
+                                          of;
+                                      memeTools.sinkMeme(meme);
+                                    },
+                                    feedback: Material(
+                                      color: Colors.transparent,
+                                      child: Text(
+                                        meme.floatingTexts[index - 1]['text'],
+                                        textAlign: meme.floatingTexts[index - 1]
+                                            ['textAlign'],
+                                        style: meme.floatingTexts[index - 1]
+                                            ['textStyle'],
+                                      ),
+                                    ),
+                                    childWhenDragging: Container(),
+                                  ),
+                                );
+                              }
+                            },
                           ),
                         ),
                       ),
@@ -1244,6 +1272,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                                           clipBehavior: Clip.antiAlias,
                                           child: ListTile(
                                             title: Text("Add Pictures"),
+                                            // subtitle: Text("From Device"),
                                             leading: Icon(Icons.image),
                                             onTap: () async {
                                               var fs = await MultiMediaPicker
@@ -1325,6 +1354,145 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                     1]['expanded'] = true;
                                               memeTools.sinkMeme(meme);
                                             },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 5, vertical: 2),
+                                        child: Material(
+                                          elevation: 4,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: ListTile(
+                                            title: Text("Floating Text"),
+                                            leading: Icon(Icons.article),
+                                            onTap: () async {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  String m = "";
+                                                  return AlertDialog(
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    title: Text(
+                                                        'Add a Floating text'),
+                                                    actions: [
+                                                      TextButton(
+                                                        child: Text("Add Text"),
+                                                        onPressed: () {
+                                                          if (m.isNotEmpty) {
+                                                            meme.floatingTexts
+                                                                .add({
+                                                              "text": m,
+                                                              "index": meme
+                                                                  .floatingTexts
+                                                                  .length,
+                                                              "textAlign":
+                                                                  TextAlign
+                                                                      .center,
+                                                              "offset": Offset(
+                                                                  MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      .5,
+                                                                  (MediaQuery.of(context).size.height *
+                                                                              .7 *
+                                                                              meme
+                                                                                  .imageHeight *
+                                                                              .01 -
+                                                                          meme.imagesPadding *
+                                                                              2) /
+                                                                      2),
+                                                              "textStyle":
+                                                                  TextStyle(
+                                                                fontSize: 30,
+                                                                color: Colors
+                                                                    .white,
+                                                                shadows: [
+                                                                  Shadow(
+                                                                    offset: Offset(
+                                                                        1.12,
+                                                                        1.12),
+                                                                    color: Colors
+                                                                        .black,
+                                                                  ),
+                                                                  Shadow(
+                                                                    offset: Offset(
+                                                                        1.12,
+                                                                        -1.12),
+                                                                    color: Colors
+                                                                        .black,
+                                                                  ),
+                                                                  Shadow(
+                                                                    offset: Offset(
+                                                                        -1.12,
+                                                                        1.12),
+                                                                    color: Colors
+                                                                        .black,
+                                                                  ),
+                                                                  Shadow(
+                                                                    offset: Offset(
+                                                                        -1.12,
+                                                                        -1.12),
+                                                                    color: Colors
+                                                                        .black,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            });
+                                                            memeTools
+                                                                .sinkMeme(meme);
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          }
+                                                        },
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: Text("Cancel"),
+                                                      ),
+                                                    ],
+                                                    content: TextField(
+                                                      onChanged: (v) {
+                                                        m = v;
+                                                      },
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 5, vertical: 2),
+                                        child: Material(
+                                          elevation: 4,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: ListTile(
+                                            title: Text("Add Pictures"),
+                                            subtitle: Text("From the Internet"),
+                                            leading:
+                                                Icon(Icons.add_photo_alternate),
+                                            onTap: () async {},
                                           ),
                                         ),
                                       ),
