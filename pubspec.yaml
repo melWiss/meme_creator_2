@@ -12,9 +12,11 @@ dependencies:
     sdk: flutter
   screenshot: ^0.3.0
   http: ^0.13.2
+  path:
   multi_media_picker:
+    git: https://github.com/ja2375/multi_media_picker
   image_save: ^4.0.1
-  rxdart:
+  rxdart: ^0.27.0
   flex_color_picker: ^2.0.1
   wc_flutter_share: ^0.4.0
 

@@ -17,6 +17,7 @@ import 'package:meme_creator_2/widgets.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
+import 'api_image_picker.dart';
 import 'data.dart';
 
 class MemeCreator extends StatefulWidget {
@@ -25,7 +26,6 @@ class MemeCreator extends StatefulWidget {
 }
 
 class _MemeCreatorState extends State<MemeCreator> {
-  MemeTools memeTools = MemeTools();
   ScreenshotController screenshotController = ScreenshotController();
   bool saveLoading = false;
   bool shareLoading = false;
@@ -1947,11 +1947,18 @@ class _MemeCreatorState extends State<MemeCreator> {
                                               BorderRadius.circular(5),
                                           clipBehavior: Clip.antiAlias,
                                           child: ListTile(
-                                            title: Text("Add Pictures"),
+                                            title: Text("Pick Image"),
                                             subtitle: Text("From the Internet"),
                                             leading:
                                                 Icon(Icons.add_photo_alternate),
-                                            onTap: () async {},
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ApiImagePicker(),
+                                                ),
+                                              );
+                                            },
                                           ),
                                         ),
                                       ),

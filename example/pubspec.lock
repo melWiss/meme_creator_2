@@ -145,10 +145,12 @@ packages:
   multi_media_picker:
     dependency: transitive
     description:
-      name: multi_media_picker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.3"
+      path: "."
+      ref: HEAD
+      resolved-ref: f5a31ad5c255be962bb19b0ed83bf11bbeb9445a
+      url: "https://github.com/ja2375/multi_media_picker"
+    source: git
+    version: "0.2.4"
   path:
     dependency: transitive
     description:

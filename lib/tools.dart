@@ -28,3 +28,5 @@ class MemeTools {
     _subject.close();
   }
 }
+
+MemeTools memeTools = MemeTools();
