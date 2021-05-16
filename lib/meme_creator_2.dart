@@ -110,17 +110,6 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                       meme.borderRadius),
                                               clipBehavior: Clip.antiAlias,
                                               child: InkWell(
-                                                onLongPress: () {
-                                                  meme.images[index]
-                                                          ['expanded'] =
-                                                      !meme.images[index]
-                                                          ['expanded'];
-                                                  memeTools.sinkMeme(meme);
-                                                },
-                                                onDoubleTap: () {
-                                                  meme.images.removeAt(index);
-                                                  memeTools.sinkMeme(meme);
-                                                },
                                                 onTap: () {
                                                   showModalBottomSheet(
                                                     context: context,
@@ -405,6 +394,41 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                                       elevation:
                                                                           4,
                                                                       child:
+                                                                          SwitchListTile(
+                                                                        title: Text(
+                                                                            'Expanded?'),
+                                                                        secondary:
+                                                                            Icon(Icons.expand),
+                                                                        value: meme.images[index]
+                                                                            [
+                                                                            'expanded'],
+                                                                        onChanged:
+                                                                            (value) {
+                                                                          meme.images[index]
+                                                                              [
+                                                                              'expanded'] = !meme
+                                                                                  .images[index]
+                                                                              [
+                                                                              'expanded'];
+
+                                                                          memeTools
+                                                                              .sinkMeme(meme);
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        Material(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                      elevation:
+                                                                          4,
+                                                                      child:
                                                                           ListTile(
                                                                         title: Text(
                                                                             'Caption Direction'),
@@ -537,6 +561,69 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                                               .copyWith(color: color);
                                                                           memeTools
                                                                               .sinkMeme(meme);
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        Material(
+                                                                      clipBehavior:
+                                                                          Clip.antiAlias,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                      elevation:
+                                                                          4,
+                                                                      child:
+                                                                          ListTile(
+                                                                        title:
+                                                                            Text(
+                                                                          'Delete this Image?',
+                                                                          style:
+                                                                              TextStyle(color: Colors.white),
+                                                                        ),
+                                                                        leading:
+                                                                            Icon(
+                                                                          Icons
+                                                                              .delete,
+                                                                          color:
+                                                                              Colors.white,
+                                                                        ),
+                                                                        tileColor:
+                                                                            Colors.red,
+                                                                        onTap:
+                                                                            () async {
+                                                                          showDialog(
+                                                                            context:
+                                                                                context,
+                                                                            builder:
+                                                                                (context) {
+                                                                              return AlertDialog(
+                                                                                title: Text('Are you sure?'),
+                                                                                actions: [
+                                                                                  TextButton(
+                                                                                      onPressed: () {
+                                                                                        Navigator.of(context).pop();
+                                                                                      },
+                                                                                      child: Text('Cancel')),
+                                                                                  TextButton(
+                                                                                      onPressed: () {
+                                                                                        meme.images.removeAt(index);
+                                                                                        memeTools.sinkMeme(meme);
+                                                                                        Navigator.of(context)..pop()..pop();
+                                                                                      },
+                                                                                      child: Text(
+                                                                                        'Delete',
+                                                                                        style: TextStyle(color: Colors.red),
+                                                                                      )),
+                                                                                ],
+                                                                              );
+                                                                            },
+                                                                          );
                                                                         },
                                                                       ),
                                                                     ),
@@ -1847,6 +1934,10 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                       TextButton(
                                                         child: Text("Add Text"),
                                                         onPressed: () {
+                                                          var b = canvasKey
+                                                                  .currentContext
+                                                                  .findRenderObject()
+                                                              as RenderBox;
                                                           if (m.isNotEmpty) {
                                                             meme.floatingTexts
                                                                 .add({
@@ -1854,23 +1945,21 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                               "index": meme
                                                                   .floatingTexts
                                                                   .length,
-                                                              "textAlign":
+                                                              "textAlignment":
                                                                   TextAlign
                                                                       .center,
+                                                              "textDirection":
+                                                                  TextDirection
+                                                                      .ltr,
                                                               "offset": Offset(
-                                                                  MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      .5,
-                                                                  (MediaQuery.of(context).size.height *
-                                                                              .7 *
-                                                                              meme
-                                                                                  .imageHeight *
-                                                                              .01 -
-                                                                          meme.imagesPadding *
-                                                                              2) /
-                                                                      2),
+                                                                MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    .5,
+                                                                b.size.height /
+                                                                    2,
+                                                              ),
                                                               "textStyle":
                                                                   TextStyle(
                                                                 fontSize: 30,
