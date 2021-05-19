@@ -199,6 +199,12 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                                       textCapitalization:
                                                                           TextCapitalization
                                                                               .characters,
+                                                                      maxLines:
+                                                                          null,
+                                                                      textDirection:
+                                                                          meme.images[index]
+                                                                              [
+                                                                              'topTextDirection'],
                                                                       decoration:
                                                                           InputDecoration(
                                                                         hintText:
@@ -236,6 +242,12 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                                       keyboardType:
                                                                           TextInputType
                                                                               .multiline,
+                                                                      maxLines:
+                                                                          null,
+                                                                      textDirection:
+                                                                          meme.images[index]
+                                                                              [
+                                                                              'bottomTextDirection'],
                                                                       textCapitalization:
                                                                           TextCapitalization
                                                                               .characters,
@@ -808,6 +820,12 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                                 .all(8.0),
                                                         child: TextField(
                                                           controller: caption1,
+                                                          maxLines: null,
+                                                          textDirection:
+                                                              meme.floatingTexts[
+                                                                      index - 1]
+                                                                  [
+                                                                  'textDirection'],
                                                           keyboardType:
                                                               TextInputType
                                                                   .multiline,
@@ -1210,7 +1228,10 @@ class _MemeCreatorState extends State<MemeCreator> {
                                       child: Text(
                                         meme.floatingTexts[index - 1]['text'],
                                         textAlign: meme.floatingTexts[index - 1]
-                                            ['textAlign'],
+                                            ['textAlignment'],
+                                        textDirection:
+                                            meme.floatingTexts[index - 1]
+                                                ['textDirection'],
                                         style: meme.floatingTexts[index - 1]
                                             ['textStyle'],
                                       ),
@@ -1277,7 +1298,10 @@ class _MemeCreatorState extends State<MemeCreator> {
                                           meme.floatingTexts[index - 1]['text'],
                                           textAlign:
                                               meme.floatingTexts[index - 1]
-                                                  ['textAlign'],
+                                                  ['textAlignment'],
+                                          textDirection:
+                                              meme.floatingTexts[index - 1]
+                                                  ['textDirection'],
                                           style: meme.floatingTexts[index - 1]
                                               ['textStyle'],
                                         ),
@@ -1431,6 +1455,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                                     TextCapitalization
                                                                         .sentences,
                                                                 maxLines: null,
+                                                                textDirection: meme
+                                                                    .titleDirection,
                                                                 keyboardType:
                                                                     TextInputType
                                                                         .multiline,
