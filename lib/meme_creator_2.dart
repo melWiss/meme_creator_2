@@ -1235,62 +1235,46 @@ class _MemeCreatorState extends State<MemeCreator> {
                                         style: meme.floatingTexts[index - 1]
                                             ['textStyle'],
                                       ),
-                                      onDragUpdate: (details) {
+                                      onDragEnd: (details) {
                                         var obj = canvasKey.currentContext;
                                         var box =
                                             obj.findRenderObject() as RenderBox;
-                                        print(box.size.height.toString() +
-                                            ", " +
-                                            details.localPosition.dy
-                                                .toString() +
-                                            ", " +
-                                            MediaQuery.of(context)
-                                                .size
-                                                .height
-                                                .toString());
-                                        print(
-                                          details.localPosition.dy -
-                                              (MediaQuery.of(context)
-                                                          .size
-                                                          .height -
-                                                      box.size.height) /
-                                                  2,
-                                        );
-                                        print(scrollController.offset);
                                         Offset of;
                                         if (MediaQuery.of(context)
                                                 .size
                                                 .height >=
-                                            box.size.height) {
-                                          of = Offset(
-                                            details.localPosition.dx,
-                                            details.localPosition.dy -
-                                                (MediaQuery.of(context)
-                                                            .size
-                                                            .height -
-                                                        box.size.height) /
-                                                    2 +
+                                            (box.size.height +
                                                 MediaQuery.of(context)
                                                     .viewPadding
-                                                    .top,
-                                          );
+                                                    .top)) {
+                                          of = Offset(
+                                              details.offset.dx,
+                                              details.offset.dy +
+                                                  5.5 +
+                                                  scrollController.offset -
+                                                  (MediaQuery.of(context)
+                                                              .size
+                                                              .height -
+                                                          (box.size.height +
+                                                              MediaQuery.of(
+                                                                      context)
+                                                                  .viewPadding
+                                                                  .top)) /
+                                                      2);
                                         } else {
                                           of = Offset(
-                                              details.localPosition.dx,
-                                              details.localPosition.dy +
+                                              details.offset.dx,
+                                              details.offset.dy +
+                                                  5.5 +
                                                   scrollController.offset -
-                                                  MediaQuery.of(context)
-                                                      .viewPadding
-                                                      .top
-                                              // box.size.height -
-                                              // MediaQuery.of(context)
-                                              //     .size
-                                              //     .height,
-                                              );
+                                                  75 / 2);
                                         }
                                         meme.floatingTexts[index - 1]
                                             ['offset'] = of;
                                         memeTools.sinkMeme(meme);
+                                        print(of);
+                                        print(
+                                            MediaQuery.of(context).viewPadding);
                                       },
                                       feedback: Material(
                                         color: Colors.transparent,
