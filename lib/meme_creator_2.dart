@@ -651,41 +651,59 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                 },
                                                 child: Stack(
                                                   children: [
-                                                    InteractiveViewer(
-                                                      minScale: 1,
-                                                      maxScale: 5,
-                                                      child: Image.memory(
-                                                        meme.images[index]
-                                                            ['data'],
-                                                        width: meme.images[
-                                                                    index]
-                                                                ['expanded']
-                                                            ? MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width -
-                                                                meme.imagesPadding *
-                                                                    2 -
-                                                                meme.containerPadding *
-                                                                    2
-                                                            : MediaQuery.of(context)
-                                                                        .size
-                                                                        .width *
-                                                                    .5 -
-                                                                meme.imagesPadding *
-                                                                    2 -
-                                                                meme.containerPadding,
-                                                        height: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .height *
-                                                                .7 *
-                                                                meme
-                                                                    .imageHeight *
-                                                                .01 -
-                                                            meme.imagesPadding *
-                                                                2,
-                                                        fit: BoxFit.contain,
+                                                    Container(
+                                                      width: meme.images[index]
+                                                              ['expanded']
+                                                          ? MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width -
+                                                              meme.imagesPadding *
+                                                                  2 -
+                                                              meme.containerPadding *
+                                                                  2
+                                                          : MediaQuery.of(context)
+                                                                      .size
+                                                                      .width *
+                                                                  .5 -
+                                                              meme.imagesPadding *
+                                                                  2 -
+                                                              meme.containerPadding,
+                                                      height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .height *
+                                                              .7 *
+                                                              meme.imageHeight *
+                                                              .01 -
+                                                          meme.imagesPadding *
+                                                              2,
+                                                      child: InteractiveViewer(
+                                                        maxScale: 5,
+                                                        constrained: false,
+                                                        child: Image.memory(
+                                                          meme.images[index]
+                                                              ['data'],
+                                                          width: meme.images[
+                                                                      index]
+                                                                  ['expanded']
+                                                              ? MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width -
+                                                                  meme.imagesPadding *
+                                                                      2 -
+                                                                  meme.containerPadding *
+                                                                      2
+                                                              : MediaQuery.of(context)
+                                                                          .size
+                                                                          .width *
+                                                                      .5 -
+                                                                  meme.imagesPadding *
+                                                                      2 -
+                                                                  meme.containerPadding,
+                                                          fit: BoxFit.contain,
+                                                        ),
                                                       ),
                                                     ),
                                                     Positioned(
