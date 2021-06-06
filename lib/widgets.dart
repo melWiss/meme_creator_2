@@ -1,4 +1,10 @@
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:meme_creator_2/tools.dart';
+import 'package:multi_media_picker/multi_media_picker.dart';
+import 'package:screenshot/screenshot.dart';
+
+import 'data.dart';
 
 class StreamWidget<T> extends StatelessWidget {
   final Stream<T> stream;
@@ -174,6 +180,1212 @@ class NewsCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+Widget memeFace(BuildContext context, Map<String, dynamic> memeData) {
+  var meme = memeTools.data;
+  return Stack(
+    children: [
+      Container(
+        width: memeData['expanded']
+            ? MediaQuery.of(context).size.width -
+                meme.imagesPadding * 2 -
+                meme.containerPadding * 2
+            : MediaQuery.of(context).size.width * .5 -
+                meme.imagesPadding * 2 -
+                meme.containerPadding,
+        height:
+            MediaQuery.of(context).size.height * .7 * meme.imageHeight * .01 -
+                meme.imagesPadding * 2,
+        child: InteractiveViewer(
+          maxScale: 5,
+          constrained: false,
+          child: Image.memory(
+            memeData['data'],
+            width: memeData['expanded']
+                ? MediaQuery.of(context).size.width -
+                    meme.imagesPadding * 2 -
+                    meme.containerPadding * 2
+                : MediaQuery.of(context).size.width * .5 -
+                    meme.imagesPadding * 2 -
+                    meme.containerPadding,
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
+      Positioned(
+        width: memeData['expanded']
+            ? MediaQuery.of(context).size.width - meme.imagesPadding * 2
+            : MediaQuery.of(context).size.width * .5 - meme.imagesPadding * 2,
+        top: 5,
+        child: Text(
+          memeData['topText'],
+          style: memeData['topTextStyle'],
+          textAlign: memeData['topTextAlignment'],
+          textDirection: memeData['topTextDirection'],
+        ),
+      ),
+      Positioned(
+        width: memeData['expanded']
+            ? MediaQuery.of(context).size.width - meme.imagesPadding * 2
+            : MediaQuery.of(context).size.width * .5 - meme.imagesPadding * 2,
+        bottom: 5,
+        child: Text(
+          memeData['bottomText'],
+          style: memeData['bottomTextStyle'],
+          textAlign: memeData['bottomTextAlignment'],
+          textDirection: memeData['bottomTextDirection'],
+        ),
+      ),
+    ],
+  );
+}
+
+Future bottomSheet(
+  BuildContext context,
+  Widget Function(BuildContext context) builder,
+) {
+  return showModalBottomSheet(
+    context: context,
+    clipBehavior: Clip.antiAlias,
+    backgroundColor: Colors.white,
+    enableDrag: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
+      ),
+    ),
+    isScrollControlled: true,
+    builder: (context) {
+      return Container(
+        height: MediaQuery.of(context).size.height * .5,
+        child: builder(context),
+      );
+    },
+  );
+}
+
+Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
+  TextEditingController caption1 =
+      TextEditingController(text: memeData['topText']);
+  TextEditingController caption2 =
+      TextEditingController(text: memeData['bottomText']);
+  caption1.selection = TextSelection(
+    baseOffset: caption1.text.length,
+    extentOffset: caption1.text.length,
+  );
+  caption2.selection = TextSelection(
+    baseOffset: caption2.text.length,
+    extentOffset: caption2.text.length,
+  );
+  int index = memeData['index'];
+  return StreamWidget<MemeData>(
+    stream: memeTools.stream,
+    widget: (context, meme) => Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            "Edit Captions",
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headline4,
+          ),
+        ),
+        Divider(
+          indent: MediaQuery.of(context).size.width * .2,
+          endIndent: MediaQuery.of(context).size.width * .2,
+          color: Colors.black,
+          thickness: 3,
+        ),
+        Expanded(
+          child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: caption1,
+                  keyboardType: TextInputType.multiline,
+                  // textCapitalization: TextCapitalization.characters,
+                  maxLines: null,
+                  textDirection: memeData['topTextDirection'],
+                  decoration: InputDecoration(
+                    hintText: "Caption #1",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    memeData['topText'] = value;
+                    memeTools.sinkMeme(meme);
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: caption2,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  textDirection: memeData['bottomTextDirection'],
+                  // textCapitalization: TextCapitalization.characters,
+                  decoration: InputDecoration(
+                    hintText: "Caption #2",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    memeData['bottomText'] = value;
+                    memeTools.sinkMeme(meme);
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text('Caption Size'),
+                    leading: Icon(Icons.text_fields),
+                    subtitle: Slider(
+                      value: (memeData['topTextStyle'] as TextStyle).fontSize,
+                      max: 50,
+                      min: 10,
+                      divisions: 40,
+                      label: (memeData['topTextStyle'] as TextStyle)
+                          .fontSize
+                          .toInt()
+                          .toString(),
+                      onChanged: (double value) {
+                        memeData['topTextStyle'] =
+                            (memeData['topTextStyle'] as TextStyle)
+                                .copyWith(fontSize: value);
+                        memeData['bottomTextStyle'] =
+                            (memeData['bottomTextStyle'] as TextStyle)
+                                .copyWith(fontSize: value);
+                        memeTools.sinkMeme(meme);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: SwitchListTile(
+                    title: Text('Bold?'),
+                    secondary: Icon(Icons.format_bold),
+                    value: (memeData['topTextStyle'] as TextStyle).fontWeight ==
+                        FontWeight.bold,
+                    onChanged: (value) {
+                      memeData['topTextStyle'] =
+                          (memeData['topTextStyle'] as TextStyle).copyWith(
+                              fontWeight:
+                                  value ? FontWeight.bold : FontWeight.normal);
+                      memeData['bottomTextStyle'] =
+                          (memeData['bottomTextStyle'] as TextStyle).copyWith(
+                              fontWeight:
+                                  value ? FontWeight.bold : FontWeight.normal);
+                      memeTools.sinkMeme(meme);
+                    },
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: SwitchListTile(
+                    title: Text('Italic?'),
+                    secondary: Icon(Icons.format_italic),
+                    value: (memeData['topTextStyle'] as TextStyle).fontStyle ==
+                        FontStyle.italic,
+                    onChanged: (value) {
+                      memeData['topTextStyle'] =
+                          (memeData['topTextStyle'] as TextStyle).copyWith(
+                              fontStyle:
+                                  value ? FontStyle.italic : FontStyle.normal);
+                      memeData['bottomTextStyle'] =
+                          (memeData['bottomTextStyle'] as TextStyle).copyWith(
+                              fontStyle:
+                                  value ? FontStyle.italic : FontStyle.normal);
+                      memeTools.sinkMeme(meme);
+                    },
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: SwitchListTile(
+                    title: Text('Expanded?'),
+                    secondary: Icon(Icons.expand),
+                    value: memeData['expanded'],
+                    onChanged: (value) {
+                      memeData['expanded'] = !memeData['expanded'];
+
+                      memeTools.sinkMeme(meme);
+                    },
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text('Caption Direction'),
+                    leading: Icon(Icons.directions),
+                    subtitle: Row(
+                      children: [
+                        Text("Left to Right"),
+                        Radio<TextDirection>(
+                          groupValue: memeData['topTextDirection'],
+                          value: TextDirection.ltr,
+                          onChanged: (value) {
+                            memeData['topTextDirection'] = value;
+                            memeData['bottomTextDirection'] = value;
+                            memeTools.sinkMeme(meme);
+                          },
+                        ),
+                        Text("Right to Left"),
+                        Radio<TextDirection>(
+                          groupValue: memeData['topTextDirection'],
+                          value: TextDirection.rtl,
+                          onChanged: (value) {
+                            memeData['topTextDirection'] = value;
+                            memeData['bottomTextDirection'] = value;
+                            memeTools.sinkMeme(meme);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text('Text Alignment'),
+                    leading: Icon(Icons.format_align_center),
+                    subtitle: Row(
+                      children: [
+                        Text("Start"),
+                        Radio<TextAlign>(
+                          groupValue: memeData['topTextAlignment'],
+                          value: TextAlign.start,
+                          onChanged: (value) {
+                            memeData['topTextAlignment'] = value;
+                            memeData['bottomTextAlignment'] = value;
+                            memeTools.sinkMeme(meme);
+                          },
+                        ),
+                        Text("Center"),
+                        Radio<TextAlign>(
+                          groupValue: memeData['topTextAlignment'],
+                          value: TextAlign.center,
+                          onChanged: (value) {
+                            memeData['topTextAlignment'] = value;
+                            memeData['bottomTextAlignment'] = value;
+                            memeTools.sinkMeme(meme);
+                          },
+                        ),
+                        Text("End"),
+                        Radio<TextAlign>(
+                          groupValue: memeData['topTextAlignment'],
+                          value: TextAlign.end,
+                          onChanged: (value) {
+                            memeData['topTextAlignment'] = value;
+                            memeData['bottomTextAlignment'] = value;
+                            memeTools.sinkMeme(meme);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text('Captions Color'),
+                    leading: Icon(Icons.color_lens),
+                    trailing: Container(
+                      height: 20,
+                      width: 30,
+                      color: memeData['topTextStyle'].color,
+                    ),
+                    onTap: () async {
+                      var color = await showColorPickerDialog(
+                          context, meme.titleStyle.color);
+                      memeData['topTextStyle'] =
+                          (memeData['topTextStyle'] as TextStyle)
+                              .copyWith(color: color);
+                      memeData['bottomTextStyle'] =
+                          (memeData['bottomTextStyle'] as TextStyle)
+                              .copyWith(color: color);
+                      memeTools.sinkMeme(meme);
+                    },
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  clipBehavior: Clip.antiAlias,
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text(
+                      'Delete this Image?',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    leading: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                    tileColor: Colors.red,
+                    onTap: () async {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Are you sure?'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Cancel')),
+                              TextButton(
+                                  onPressed: () {
+                                    meme.images.removeAt(index);
+                                    memeTools.sinkMeme(meme);
+                                    Navigator.of(context)..pop()..pop();
+                                  },
+                                  child: Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.red),
+                                  )),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget listTileMaterial(Widget child) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Material(
+      borderRadius: BorderRadius.circular(5),
+      elevation: 4,
+      child: child,
+    ),
+  );
+}
+
+Widget floatingTextAlert(
+  GlobalKey canvasKey,
+  MemeData meme,
+  BuildContext context,
+) {
+  String m = "";
+  return AlertDialog(
+    backgroundColor: Colors.white,
+    title: Text('Add a Floating text'),
+    actions: [
+      TextButton(
+        child: Text("Add Text"),
+        onPressed: () {
+          var b = canvasKey.currentContext.findRenderObject() as RenderBox;
+          if (m.isNotEmpty) {
+            meme.floatingTexts.add({
+              "text": m,
+              "index": meme.floatingTexts.length,
+              "textAlignment": TextAlign.center,
+              "textDirection": TextDirection.ltr,
+              "offset": Offset(
+                MediaQuery.of(context).size.width * .5,
+                b.size.height / 2,
+              ),
+              "textStyle": TextStyle(
+                fontSize: 30,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    offset: Offset(1.12, 1.12),
+                    color: Colors.black,
+                  ),
+                  Shadow(
+                    offset: Offset(1.12, -1.12),
+                    color: Colors.black,
+                  ),
+                  Shadow(
+                    offset: Offset(-1.12, 1.12),
+                    color: Colors.black,
+                  ),
+                  Shadow(
+                    offset: Offset(-1.12, -1.12),
+                    color: Colors.black,
+                  ),
+                ],
+              ),
+            });
+            memeTools.sinkMeme(meme);
+            Navigator.of(context).pop();
+          }
+        },
+      ),
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: Text("Cancel"),
+      ),
+    ],
+    content: TextField(
+      onChanged: (v) {
+        m = v;
+      },
+    ),
+  );
+}
+
+Widget memeTitleSheet(MemeData meme) {
+  TextEditingController textEditingController =
+      TextEditingController(text: meme.title);
+  textEditingController.selection = TextSelection(
+    baseOffset: meme.title.length,
+    extentOffset: meme.title.length,
+  );
+  return StreamWidget<MemeData>(
+    stream: memeTools.stream,
+    widget: (context, meme) => Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            "Meme Title",
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headline4,
+          ),
+        ),
+        Divider(
+          indent: MediaQuery.of(context).size.width * .2,
+          endIndent: MediaQuery.of(context).size.width * .2,
+          color: Colors.black,
+          thickness: 3,
+        ),
+        Expanded(
+            child: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: textEditingController,
+                textCapitalization: TextCapitalization.sentences,
+                maxLines: null,
+                textDirection: meme.titleDirection,
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                  hintText: "Write the meme title here",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 10,
+                  ),
+                ),
+                onChanged: (value) {
+                  meme.title = value;
+                  memeTools.sinkMeme(meme);
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(5),
+                elevation: 4,
+                child: ListTile(
+                  title: Text('Title Size'),
+                  leading: Icon(Icons.text_fields),
+                  subtitle: Slider(
+                    value: meme.titleStyle.fontSize,
+                    max: 75,
+                    min: 14,
+                    divisions: 61,
+                    label: meme.titleStyle.fontSize.toInt().toString(),
+                    onChanged: (double value) {
+                      meme.titleStyle = meme.titleStyle.copyWith(
+                        fontSize: value,
+                      );
+                      memeTools.sinkMeme(meme);
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(5),
+                elevation: 4,
+                child: ListTile(
+                  title: Text('Title Padding'),
+                  leading: Icon(Icons.space_bar),
+                  subtitle: Slider(
+                    value: meme.titlePadding,
+                    max: 40,
+                    min: 0,
+                    divisions: 40,
+                    label: meme.titlePadding.toInt().toString(),
+                    onChanged: (double value) {
+                      meme.titlePadding = value;
+                      memeTools.sinkMeme(meme);
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(5),
+                elevation: 4,
+                child: SwitchListTile(
+                  title: Text('Bold?'),
+                  secondary: Icon(Icons.format_bold),
+                  value: meme.titleStyle.fontWeight == FontWeight.bold,
+                  onChanged: (value) {
+                    meme.titleStyle = meme.titleStyle.copyWith(
+                        fontWeight:
+                            value ? FontWeight.bold : FontWeight.normal);
+                    memeTools.sinkMeme(meme);
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(5),
+                elevation: 4,
+                child: SwitchListTile(
+                  title: Text('Italic?'),
+                  secondary: Icon(Icons.format_italic),
+                  value: meme.titleStyle.fontStyle == FontStyle.italic,
+                  onChanged: (value) {
+                    meme.titleStyle = meme.titleStyle.copyWith(
+                        fontStyle: value ? FontStyle.italic : FontStyle.normal);
+                    memeTools.sinkMeme(meme);
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(5),
+                elevation: 4,
+                child: ListTile(
+                  title: Text('Text Direction'),
+                  leading: Icon(Icons.directions),
+                  subtitle: Row(
+                    children: [
+                      Text("Left to Right"),
+                      Radio<TextDirection>(
+                        groupValue: meme.titleDirection,
+                        value: TextDirection.ltr,
+                        onChanged: (value) {
+                          meme.titleDirection = value;
+                          memeTools.sinkMeme(meme);
+                        },
+                      ),
+                      Text("Right to Left"),
+                      Radio<TextDirection>(
+                        groupValue: meme.titleDirection,
+                        value: TextDirection.rtl,
+                        onChanged: (value) {
+                          meme.titleDirection = value;
+                          memeTools.sinkMeme(meme);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(5),
+                elevation: 4,
+                child: ListTile(
+                  title: Text('Text Alignment'),
+                  leading: Icon(Icons.format_align_center),
+                  subtitle: Row(
+                    children: [
+                      Text("Start"),
+                      Radio<TextAlign>(
+                        groupValue: meme.titleAlign,
+                        value: TextAlign.start,
+                        onChanged: (value) {
+                          meme.titleAlign = value;
+                          memeTools.sinkMeme(meme);
+                        },
+                      ),
+                      Text("Center"),
+                      Radio<TextAlign>(
+                        groupValue: meme.titleAlign,
+                        value: TextAlign.center,
+                        onChanged: (value) {
+                          meme.titleAlign = value;
+                          memeTools.sinkMeme(meme);
+                        },
+                      ),
+                      Text("End"),
+                      Radio<TextAlign>(
+                        groupValue: meme.titleAlign,
+                        value: TextAlign.end,
+                        onChanged: (value) {
+                          meme.titleAlign = value;
+                          memeTools.sinkMeme(meme);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(5),
+                elevation: 4,
+                child: ListTile(
+                  title: Text('Title Color'),
+                  leading: Icon(Icons.color_lens),
+                  trailing: Container(
+                    height: 20,
+                    width: 30,
+                    color: meme.titleStyle.color,
+                  ),
+                  onTap: () async {
+                    var color = await showColorPickerDialog(
+                        context, meme.titleStyle.color);
+                    meme.titleStyle = meme.titleStyle.copyWith(color: color);
+                    memeTools.sinkMeme(meme);
+                  },
+                ),
+              ),
+            ),
+          ],
+        )),
+      ],
+    ),
+  );
+}
+
+Future<void> addImagesFromDevice(MemeData meme) async {
+  var fs = await MultiMediaPicker.pickImages();
+  int i = 0;
+  fs.forEach((element) {
+    meme.images.add({
+      'data': element.readAsBytesSync(),
+      'index': i,
+      'expanded': false,
+      'topText': '',
+      'bottomText': '',
+      'topTextDirection': TextDirection.ltr,
+      'bottomTextDirection': TextDirection.ltr,
+      'topTextAlignment': TextAlign.center,
+      'bottomTextAlignment': TextAlign.center,
+      'topTextStyle': TextStyle(
+        fontSize: 18,
+        color: Colors.white,
+        shadows: [
+          Shadow(
+            offset: Offset(1.12, 1.12),
+            color: Colors.black,
+          ),
+          Shadow(
+            offset: Offset(1.12, -1.12),
+            color: Colors.black,
+          ),
+          Shadow(
+            offset: Offset(-1.12, 1.12),
+            color: Colors.black,
+          ),
+          Shadow(
+            offset: Offset(-1.12, -1.12),
+            color: Colors.black,
+          ),
+        ],
+      ),
+      'bottomTextStyle': TextStyle(
+        fontSize: 18,
+        color: Colors.white,
+        shadows: [
+          Shadow(
+            offset: Offset(1.12, 1.12),
+            color: Colors.black,
+          ),
+          Shadow(
+            offset: Offset(1.12, -1.12),
+            color: Colors.black,
+          ),
+          Shadow(
+            offset: Offset(-1.12, 1.12),
+            color: Colors.black,
+          ),
+          Shadow(
+            offset: Offset(-1.12, -1.12),
+            color: Colors.black,
+          ),
+        ],
+      ),
+    });
+    i++;
+  });
+  if (fs.length % 2 == 1)
+    meme.images[meme.images.length - 1]['expanded'] = true;
+  memeTools.sinkMeme(meme);
+}
+
+Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
+  TextEditingController caption1 =
+      TextEditingController(text: meme.floatingTexts[index - 1]['text']);
+  caption1.selection = TextSelection(
+    baseOffset: meme.floatingTexts[index - 1]['text'].length,
+    extentOffset: meme.floatingTexts[index - 1]['text'].length,
+  );
+  return StreamWidget<MemeData>(
+    stream: memeTools.stream,
+    widget: (context, meme) => Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            "Edit Floating Text",
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headline4,
+          ),
+        ),
+        Divider(
+          indent: MediaQuery.of(context).size.width * .2,
+          endIndent: MediaQuery.of(context).size.width * .2,
+          color: Colors.black,
+          thickness: 3,
+        ),
+        Expanded(
+          child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: caption1,
+                  maxLines: null,
+                  textDirection: meme.floatingTexts[index - 1]['textDirection'],
+                  keyboardType: TextInputType.multiline,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    hintText: "Write your text here",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    meme.floatingTexts[index - 1]['text'] = value;
+                    memeTools.sinkMeme(meme);
+                  },
+                ),
+              ),
+              listTileMaterial(
+                ListTile(
+                  title: Text('Caption Size'),
+                  leading: Icon(Icons.text_fields),
+                  subtitle: Slider(
+                    value: (meme.floatingTexts[index - 1]['textStyle']
+                            as TextStyle)
+                        .fontSize,
+                    max: 50,
+                    min: 10,
+                    divisions: 40,
+                    label: (meme.floatingTexts[index - 1]['textStyle']
+                            as TextStyle)
+                        .fontSize
+                        .toInt()
+                        .toString(),
+                    onChanged: (double value) {
+                      meme.floatingTexts[index - 1]['textStyle'] =
+                          (meme.floatingTexts[index - 1]['textStyle']
+                                  as TextStyle)
+                              .copyWith(fontSize: value);
+                      memeTools.sinkMeme(meme);
+                    },
+                  ),
+                ),
+              ),
+              listTileMaterial(
+                SwitchListTile(
+                  title: Text('Bold?'),
+                  secondary: Icon(Icons.format_bold),
+                  value:
+                      (meme.floatingTexts[index - 1]['textStyle'] as TextStyle)
+                              .fontWeight ==
+                          FontWeight.bold,
+                  onChanged: (value) {
+                    meme.floatingTexts[index - 1]['textStyle'] = (meme
+                            .floatingTexts[index - 1]['textStyle'] as TextStyle)
+                        .copyWith(
+                            fontWeight:
+                                value ? FontWeight.bold : FontWeight.normal);
+                    memeTools.sinkMeme(meme);
+                  },
+                ),
+              ),
+              listTileMaterial(
+                SwitchListTile(
+                  title: Text('Italic?'),
+                  secondary: Icon(Icons.format_italic),
+                  value:
+                      (meme.floatingTexts[index - 1]['textStyle'] as TextStyle)
+                              .fontStyle ==
+                          FontStyle.italic,
+                  onChanged: (value) {
+                    meme.floatingTexts[index - 1]['textStyle'] = (meme
+                            .floatingTexts[index - 1]['textStyle'] as TextStyle)
+                        .copyWith(
+                            fontStyle:
+                                value ? FontStyle.italic : FontStyle.normal);
+                    memeTools.sinkMeme(meme);
+                  },
+                ),
+              ),
+              listTileMaterial(
+                ListTile(
+                  title: Text('Caption Direction'),
+                  leading: Icon(Icons.directions),
+                  subtitle: Row(
+                    children: [
+                      Text("Left to Right"),
+                      Radio<TextDirection>(
+                        groupValue: meme.floatingTexts[index - 1]
+                            ['textDirection'],
+                        value: TextDirection.ltr,
+                        onChanged: (value) {
+                          meme.floatingTexts[index - 1]['textDirection'] =
+                              value;
+                          memeTools.sinkMeme(meme);
+                        },
+                      ),
+                      Text("Right to Left"),
+                      Radio<TextDirection>(
+                        groupValue: meme.floatingTexts[index - 1]
+                            ['textDirection'],
+                        value: TextDirection.rtl,
+                        onChanged: (value) {
+                          meme.floatingTexts[index - 1]['textDirection'] =
+                              value;
+                          memeTools.sinkMeme(meme);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              listTileMaterial(
+                ListTile(
+                  title: Text('Text Alignment'),
+                  leading: Icon(Icons.format_align_center),
+                  subtitle: Row(
+                    children: [
+                      Text("Start"),
+                      Radio<TextAlign>(
+                        groupValue: meme.floatingTexts[index - 1]
+                            ['textAlignment'],
+                        value: TextAlign.start,
+                        onChanged: (value) {
+                          meme.floatingTexts[index - 1]['textAlignment'] =
+                              value;
+                          memeTools.sinkMeme(meme);
+                        },
+                      ),
+                      Text("Center"),
+                      Radio<TextAlign>(
+                        groupValue: meme.floatingTexts[index - 1]
+                            ['textAlignment'],
+                        value: TextAlign.center,
+                        onChanged: (value) {
+                          meme.floatingTexts[index - 1]['textAlignment'] =
+                              value;
+                          memeTools.sinkMeme(meme);
+                        },
+                      ),
+                      Text("End"),
+                      Radio<TextAlign>(
+                        groupValue: meme.floatingTexts[index - 1]
+                            ['textAlignment'],
+                        value: TextAlign.end,
+                        onChanged: (value) {
+                          meme.floatingTexts[index - 1]['textAlignment'] =
+                              value;
+                          memeTools.sinkMeme(meme);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              listTileMaterial(
+                ListTile(
+                  title: Text('Captions Color'),
+                  leading: Icon(Icons.color_lens),
+                  trailing: Container(
+                    height: 20,
+                    width: 30,
+                    color: meme.floatingTexts[index - 1]['textStyle'].color,
+                  ),
+                  onTap: () async {
+                    var color = await showColorPickerDialog(context,
+                        meme.floatingTexts[index - 1]['textStyle'].color);
+                    meme.floatingTexts[index - 1]['textStyle'] = (meme
+                            .floatingTexts[index - 1]['textStyle'] as TextStyle)
+                        .copyWith(color: color);
+                    memeTools.sinkMeme(meme);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class UiWidget extends StatelessWidget {
+  const UiWidget({
+    Key key,
+    @required this.scrollController,
+    @required this.screenshotController,
+    @required this.canvasKey,
+  }) : super(key: key);
+
+  final ScrollController scrollController;
+  final ScreenshotController screenshotController;
+  final GlobalKey<State<StatefulWidget>> canvasKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamWidget<MemeData>(
+      stream: memeTools.stream,
+      widget: (context, meme) {
+        if (meme.title.isEmpty && meme.images.isEmpty) {
+          return Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(5),
+            child: Text(
+              "Add pictures and captions using the tools button from the bottom left corner.\n👇👇👇",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        } else {
+          return SingleChildScrollView(
+            controller: scrollController,
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).viewPadding.top,
+                bottom: 75,
+              ),
+              child: Screenshot(
+                controller: screenshotController,
+                child: Stack(
+                  children: List.generate(
+                    meme.floatingTexts.length + 1,
+                    (index) {
+                      if (index == 0) {
+                        return Container(
+                          key: canvasKey,
+                          width: MediaQuery.of(context).size.width,
+                          color: Colors.white,
+                          padding: EdgeInsets.all(meme.containerPadding),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              meme.title != ""
+                                  ? Padding(
+                                      padding:
+                                          EdgeInsets.all(meme.titlePadding),
+                                      child: Text(
+                                        meme.title,
+                                        style: meme.titleStyle,
+                                        textAlign: meme.titleAlign,
+                                        textDirection: meme.titleDirection,
+                                      ),
+                                    )
+                                  : Container(),
+                              Wrap(
+                                children: List.generate(
+                                  meme.images.length,
+                                  (index) => Padding(
+                                    padding: EdgeInsets.all(meme.imagesPadding),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                          meme.borderRadius),
+                                      clipBehavior: Clip.antiAlias,
+                                      child: InkWell(
+                                        onTap: () {
+                                          bottomSheet(
+                                            context,
+                                            (context) => imageSheet(
+                                              context,
+                                              meme.images[index],
+                                            ),
+                                          );
+                                        },
+                                        child: memeFace(
+                                            context, meme.images[index]),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Positioned(
+                          top: meme.floatingTexts[index - 1]['offset'].dy,
+                          left: meme.floatingTexts[index - 1]['offset'].dx,
+                          child: InkWell(
+                            onTap: () {
+                              bottomSheet(
+                                context,
+                                (context) => floatingTextSheet(
+                                  context,
+                                  meme,
+                                  index,
+                                ),
+                              );
+                            },
+                            child: Draggable(
+                              child: Text(
+                                meme.floatingTexts[index - 1]['text'],
+                                textAlign: meme.floatingTexts[index - 1]
+                                    ['textAlignment'],
+                                textDirection: meme.floatingTexts[index - 1]
+                                    ['textDirection'],
+                                style: meme.floatingTexts[index - 1]
+                                    ['textStyle'],
+                              ),
+                              onDragEnd: (details) {
+                                var obj = canvasKey.currentContext;
+                                var box = obj.findRenderObject() as RenderBox;
+                                Offset of;
+                                if (MediaQuery.of(context).size.height >=
+                                    (box.size.height +
+                                        MediaQuery.of(context)
+                                            .viewPadding
+                                            .top)) {
+                                  of = Offset(
+                                      details.offset.dx,
+                                      details.offset.dy +
+                                          5.5 +
+                                          scrollController.offset -
+                                          (MediaQuery.of(context).size.height -
+                                                  (box.size.height +
+                                                      MediaQuery.of(context)
+                                                          .viewPadding
+                                                          .top)) /
+                                              2);
+                                } else {
+                                  of = Offset(
+                                      details.offset.dx,
+                                      details.offset.dy +
+                                          5.5 +
+                                          scrollController.offset -
+                                          75 / 2);
+                                }
+                                meme.floatingTexts[index - 1]['offset'] = of;
+                                memeTools.sinkMeme(meme);
+                                print(of);
+                                print(MediaQuery.of(context).viewPadding);
+                              },
+                              feedback: Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  meme.floatingTexts[index - 1]['text'],
+                                  textAlign: meme.floatingTexts[index - 1]
+                                      ['textAlignment'],
+                                  textDirection: meme.floatingTexts[index - 1]
+                                      ['textDirection'],
+                                  style: meme.floatingTexts[index - 1]
+                                      ['textStyle'],
+                                ),
+                              ),
+                              childWhenDragging: Container(),
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }
