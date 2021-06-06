@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meme_creator_2/tools.dart';
 import 'package:multi_media_picker/multi_media_picker.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:image/image.dart' as img;
 
 import 'data.dart';
 
@@ -196,9 +197,12 @@ Widget memeFace(BuildContext context, Map<String, dynamic> memeData) {
             : MediaQuery.of(context).size.width * .5 -
                 meme.imagesPadding * 2 -
                 meme.containerPadding,
-        height:
-            MediaQuery.of(context).size.height * .7 * meme.imageHeight * .01 -
-                meme.imagesPadding * 2,
+        height: (memeData['expanded']
+                ? meme.expandedImageHeight * meme.imageHeight * .01
+                : meme.unexpandedImageHeight * meme.imageHeight * .01) -
+            meme.imagesPadding * 2 -
+            meme.containerPadding *
+                2, //I'm not quite sure about this value, u may delete it or change it later
         child: InteractiveViewer(
           maxScale: 5,
           constrained: false,
@@ -269,6 +273,7 @@ Future bottomSheet(
 }
 
 Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
+  var deviceWidth = MediaQuery.of(context).size.width;
   TextEditingController caption1 =
       TextEditingController(text: memeData['topText']);
   TextEditingController caption2 =
@@ -324,7 +329,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                   ),
                   onChanged: (value) {
                     memeData['topText'] = value;
-                    memeTools.sinkMeme(meme);
+                    memeTools.sinkMeme(meme, deviceWidth);
                   },
                 ),
               ),
@@ -348,7 +353,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                   ),
                   onChanged: (value) {
                     memeData['bottomText'] = value;
-                    memeTools.sinkMeme(meme);
+                    memeTools.sinkMeme(meme, deviceWidth);
                   },
                 ),
               ),
@@ -376,7 +381,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                         memeData['bottomTextStyle'] =
                             (memeData['bottomTextStyle'] as TextStyle)
                                 .copyWith(fontSize: value);
-                        memeTools.sinkMeme(meme);
+                        memeTools.sinkMeme(meme, deviceWidth);
                       },
                     ),
                   ),
@@ -401,7 +406,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                           (memeData['bottomTextStyle'] as TextStyle).copyWith(
                               fontWeight:
                                   value ? FontWeight.bold : FontWeight.normal);
-                      memeTools.sinkMeme(meme);
+                      memeTools.sinkMeme(meme, deviceWidth);
                     },
                   ),
                 ),
@@ -425,7 +430,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                           (memeData['bottomTextStyle'] as TextStyle).copyWith(
                               fontStyle:
                                   value ? FontStyle.italic : FontStyle.normal);
-                      memeTools.sinkMeme(meme);
+                      memeTools.sinkMeme(meme, deviceWidth);
                     },
                   ),
                 ),
@@ -442,7 +447,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                     onChanged: (value) {
                       memeData['expanded'] = !memeData['expanded'];
 
-                      memeTools.sinkMeme(meme);
+                      memeTools.sinkMeme(meme, deviceWidth);
                     },
                   ),
                 ),
@@ -464,7 +469,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                           onChanged: (value) {
                             memeData['topTextDirection'] = value;
                             memeData['bottomTextDirection'] = value;
-                            memeTools.sinkMeme(meme);
+                            memeTools.sinkMeme(meme, deviceWidth);
                           },
                         ),
                         Text("Right to Left"),
@@ -474,7 +479,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                           onChanged: (value) {
                             memeData['topTextDirection'] = value;
                             memeData['bottomTextDirection'] = value;
-                            memeTools.sinkMeme(meme);
+                            memeTools.sinkMeme(meme, deviceWidth);
                           },
                         ),
                       ],
@@ -499,7 +504,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                           onChanged: (value) {
                             memeData['topTextAlignment'] = value;
                             memeData['bottomTextAlignment'] = value;
-                            memeTools.sinkMeme(meme);
+                            memeTools.sinkMeme(meme, deviceWidth);
                           },
                         ),
                         Text("Center"),
@@ -509,7 +514,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                           onChanged: (value) {
                             memeData['topTextAlignment'] = value;
                             memeData['bottomTextAlignment'] = value;
-                            memeTools.sinkMeme(meme);
+                            memeTools.sinkMeme(meme, deviceWidth);
                           },
                         ),
                         Text("End"),
@@ -519,7 +524,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                           onChanged: (value) {
                             memeData['topTextAlignment'] = value;
                             memeData['bottomTextAlignment'] = value;
-                            memeTools.sinkMeme(meme);
+                            memeTools.sinkMeme(meme, deviceWidth);
                           },
                         ),
                       ],
@@ -549,7 +554,7 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                       memeData['bottomTextStyle'] =
                           (memeData['bottomTextStyle'] as TextStyle)
                               .copyWith(color: color);
-                      memeTools.sinkMeme(meme);
+                      memeTools.sinkMeme(meme, deviceWidth);
                     },
                   ),
                 ),
@@ -585,7 +590,10 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                               TextButton(
                                   onPressed: () {
                                     meme.images.removeAt(index);
-                                    memeTools.sinkMeme(meme);
+                                    meme.expandedImageHeight = null;
+                                    meme.unexpandedImageHeight = null;
+                                    memeTools.imageHeightOperation(
+                                        meme, deviceWidth);
                                     Navigator.of(context)..pop()..pop();
                                   },
                                   child: Text(
@@ -624,6 +632,7 @@ Widget floatingTextAlert(
   MemeData meme,
   BuildContext context,
 ) {
+  var deviceWidth = MediaQuery.of(context).size.width;
   String m = "";
   return AlertDialog(
     backgroundColor: Colors.white,
@@ -666,7 +675,7 @@ Widget floatingTextAlert(
                 ],
               ),
             });
-            memeTools.sinkMeme(meme);
+            memeTools.sinkMeme(meme, deviceWidth);
             Navigator.of(context).pop();
           }
         },
@@ -695,236 +704,240 @@ Widget memeTitleSheet(MemeData meme) {
   );
   return StreamWidget<MemeData>(
     stream: memeTools.stream,
-    widget: (context, meme) => Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            "Meme Title",
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headline4,
+    widget: (context, meme) {
+      var deviceWidth = MediaQuery.of(context).size.width;
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Meme Title",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline4,
+            ),
           ),
-        ),
-        Divider(
-          indent: MediaQuery.of(context).size.width * .2,
-          endIndent: MediaQuery.of(context).size.width * .2,
-          color: Colors.black,
-          thickness: 3,
-        ),
-        Expanded(
-            child: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: textEditingController,
-                textCapitalization: TextCapitalization.sentences,
-                maxLines: null,
-                textDirection: meme.titleDirection,
-                keyboardType: TextInputType.multiline,
-                decoration: InputDecoration(
-                  hintText: "Write the meme title here",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black),
+          Divider(
+            indent: MediaQuery.of(context).size.width * .2,
+            endIndent: MediaQuery.of(context).size.width * .2,
+            color: Colors.black,
+            thickness: 3,
+          ),
+          Expanded(
+              child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: textEditingController,
+                  textCapitalization: TextCapitalization.sentences,
+                  maxLines: null,
+                  textDirection: meme.titleDirection,
+                  keyboardType: TextInputType.multiline,
+                  decoration: InputDecoration(
+                    hintText: "Write the meme title here",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                    ),
                   ),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 10,
+                  onChanged: (value) {
+                    meme.title = value;
+                    memeTools.sinkMeme(meme, deviceWidth);
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text('Title Size'),
+                    leading: Icon(Icons.text_fields),
+                    subtitle: Slider(
+                      value: meme.titleStyle.fontSize,
+                      max: 75,
+                      min: 14,
+                      divisions: 61,
+                      label: meme.titleStyle.fontSize.toInt().toString(),
+                      onChanged: (double value) {
+                        meme.titleStyle = meme.titleStyle.copyWith(
+                          fontSize: value,
+                        );
+                        memeTools.sinkMeme(meme, deviceWidth);
+                      },
+                    ),
                   ),
                 ),
-                onChanged: (value) {
-                  meme.title = value;
-                  memeTools.sinkMeme(meme);
-                },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Material(
-                borderRadius: BorderRadius.circular(5),
-                elevation: 4,
-                child: ListTile(
-                  title: Text('Title Size'),
-                  leading: Icon(Icons.text_fields),
-                  subtitle: Slider(
-                    value: meme.titleStyle.fontSize,
-                    max: 75,
-                    min: 14,
-                    divisions: 61,
-                    label: meme.titleStyle.fontSize.toInt().toString(),
-                    onChanged: (double value) {
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text('Title Padding'),
+                    leading: Icon(Icons.space_bar),
+                    subtitle: Slider(
+                      value: meme.titlePadding,
+                      max: 40,
+                      min: 0,
+                      divisions: 40,
+                      label: meme.titlePadding.toInt().toString(),
+                      onChanged: (double value) {
+                        meme.titlePadding = value;
+                        memeTools.sinkMeme(meme, deviceWidth);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: SwitchListTile(
+                    title: Text('Bold?'),
+                    secondary: Icon(Icons.format_bold),
+                    value: meme.titleStyle.fontWeight == FontWeight.bold,
+                    onChanged: (value) {
                       meme.titleStyle = meme.titleStyle.copyWith(
-                        fontSize: value,
-                      );
-                      memeTools.sinkMeme(meme);
+                          fontWeight:
+                              value ? FontWeight.bold : FontWeight.normal);
+                      memeTools.sinkMeme(meme, deviceWidth);
                     },
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Material(
-                borderRadius: BorderRadius.circular(5),
-                elevation: 4,
-                child: ListTile(
-                  title: Text('Title Padding'),
-                  leading: Icon(Icons.space_bar),
-                  subtitle: Slider(
-                    value: meme.titlePadding,
-                    max: 40,
-                    min: 0,
-                    divisions: 40,
-                    label: meme.titlePadding.toInt().toString(),
-                    onChanged: (double value) {
-                      meme.titlePadding = value;
-                      memeTools.sinkMeme(meme);
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: SwitchListTile(
+                    title: Text('Italic?'),
+                    secondary: Icon(Icons.format_italic),
+                    value: meme.titleStyle.fontStyle == FontStyle.italic,
+                    onChanged: (value) {
+                      meme.titleStyle = meme.titleStyle.copyWith(
+                          fontStyle:
+                              value ? FontStyle.italic : FontStyle.normal);
+                      memeTools.sinkMeme(meme, deviceWidth);
                     },
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Material(
-                borderRadius: BorderRadius.circular(5),
-                elevation: 4,
-                child: SwitchListTile(
-                  title: Text('Bold?'),
-                  secondary: Icon(Icons.format_bold),
-                  value: meme.titleStyle.fontWeight == FontWeight.bold,
-                  onChanged: (value) {
-                    meme.titleStyle = meme.titleStyle.copyWith(
-                        fontWeight:
-                            value ? FontWeight.bold : FontWeight.normal);
-                    memeTools.sinkMeme(meme);
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Material(
-                borderRadius: BorderRadius.circular(5),
-                elevation: 4,
-                child: SwitchListTile(
-                  title: Text('Italic?'),
-                  secondary: Icon(Icons.format_italic),
-                  value: meme.titleStyle.fontStyle == FontStyle.italic,
-                  onChanged: (value) {
-                    meme.titleStyle = meme.titleStyle.copyWith(
-                        fontStyle: value ? FontStyle.italic : FontStyle.normal);
-                    memeTools.sinkMeme(meme);
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Material(
-                borderRadius: BorderRadius.circular(5),
-                elevation: 4,
-                child: ListTile(
-                  title: Text('Text Direction'),
-                  leading: Icon(Icons.directions),
-                  subtitle: Row(
-                    children: [
-                      Text("Left to Right"),
-                      Radio<TextDirection>(
-                        groupValue: meme.titleDirection,
-                        value: TextDirection.ltr,
-                        onChanged: (value) {
-                          meme.titleDirection = value;
-                          memeTools.sinkMeme(meme);
-                        },
-                      ),
-                      Text("Right to Left"),
-                      Radio<TextDirection>(
-                        groupValue: meme.titleDirection,
-                        value: TextDirection.rtl,
-                        onChanged: (value) {
-                          meme.titleDirection = value;
-                          memeTools.sinkMeme(meme);
-                        },
-                      ),
-                    ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text('Text Direction'),
+                    leading: Icon(Icons.directions),
+                    subtitle: Row(
+                      children: [
+                        Text("Left to Right"),
+                        Radio<TextDirection>(
+                          groupValue: meme.titleDirection,
+                          value: TextDirection.ltr,
+                          onChanged: (value) {
+                            meme.titleDirection = value;
+                            memeTools.sinkMeme(meme, deviceWidth);
+                          },
+                        ),
+                        Text("Right to Left"),
+                        Radio<TextDirection>(
+                          groupValue: meme.titleDirection,
+                          value: TextDirection.rtl,
+                          onChanged: (value) {
+                            meme.titleDirection = value;
+                            memeTools.sinkMeme(meme, deviceWidth);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Material(
-                borderRadius: BorderRadius.circular(5),
-                elevation: 4,
-                child: ListTile(
-                  title: Text('Text Alignment'),
-                  leading: Icon(Icons.format_align_center),
-                  subtitle: Row(
-                    children: [
-                      Text("Start"),
-                      Radio<TextAlign>(
-                        groupValue: meme.titleAlign,
-                        value: TextAlign.start,
-                        onChanged: (value) {
-                          meme.titleAlign = value;
-                          memeTools.sinkMeme(meme);
-                        },
-                      ),
-                      Text("Center"),
-                      Radio<TextAlign>(
-                        groupValue: meme.titleAlign,
-                        value: TextAlign.center,
-                        onChanged: (value) {
-                          meme.titleAlign = value;
-                          memeTools.sinkMeme(meme);
-                        },
-                      ),
-                      Text("End"),
-                      Radio<TextAlign>(
-                        groupValue: meme.titleAlign,
-                        value: TextAlign.end,
-                        onChanged: (value) {
-                          meme.titleAlign = value;
-                          memeTools.sinkMeme(meme);
-                        },
-                      ),
-                    ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text('Text Alignment'),
+                    leading: Icon(Icons.format_align_center),
+                    subtitle: Row(
+                      children: [
+                        Text("Start"),
+                        Radio<TextAlign>(
+                          groupValue: meme.titleAlign,
+                          value: TextAlign.start,
+                          onChanged: (value) {
+                            meme.titleAlign = value;
+                            memeTools.sinkMeme(meme, deviceWidth);
+                          },
+                        ),
+                        Text("Center"),
+                        Radio<TextAlign>(
+                          groupValue: meme.titleAlign,
+                          value: TextAlign.center,
+                          onChanged: (value) {
+                            meme.titleAlign = value;
+                            memeTools.sinkMeme(meme, deviceWidth);
+                          },
+                        ),
+                        Text("End"),
+                        Radio<TextAlign>(
+                          groupValue: meme.titleAlign,
+                          value: TextAlign.end,
+                          onChanged: (value) {
+                            meme.titleAlign = value;
+                            memeTools.sinkMeme(meme, deviceWidth);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Material(
-                borderRadius: BorderRadius.circular(5),
-                elevation: 4,
-                child: ListTile(
-                  title: Text('Title Color'),
-                  leading: Icon(Icons.color_lens),
-                  trailing: Container(
-                    height: 20,
-                    width: 30,
-                    color: meme.titleStyle.color,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text('Title Color'),
+                    leading: Icon(Icons.color_lens),
+                    trailing: Container(
+                      height: 20,
+                      width: 30,
+                      color: meme.titleStyle.color,
+                    ),
+                    onTap: () async {
+                      var color = await showColorPickerDialog(
+                          context, meme.titleStyle.color);
+                      meme.titleStyle = meme.titleStyle.copyWith(color: color);
+                      memeTools.sinkMeme(meme, deviceWidth);
+                    },
                   ),
-                  onTap: () async {
-                    var color = await showColorPickerDialog(
-                        context, meme.titleStyle.color);
-                    meme.titleStyle = meme.titleStyle.copyWith(color: color);
-                    memeTools.sinkMeme(meme);
-                  },
                 ),
               ),
-            ),
-          ],
-        )),
-      ],
-    ),
+            ],
+          )),
+        ],
+      );
+    },
   );
 }
 
-Future<void> addImagesFromDevice(MemeData meme) async {
+Future<void> addImagesFromDevice(MemeData meme, double deviceWidth) async {
   var fs = await MultiMediaPicker.pickImages();
   int i = 0;
   fs.forEach((element) {
@@ -987,7 +1000,8 @@ Future<void> addImagesFromDevice(MemeData meme) async {
   });
   if (fs.length % 2 == 1)
     meme.images[meme.images.length - 1]['expanded'] = true;
-  memeTools.sinkMeme(meme);
+  // memeTools.sinkMeme(meme, deviceWidth);
+  memeTools.imageHeightOperation(meme, deviceWidth);
 }
 
 Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
@@ -997,6 +1011,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
     baseOffset: meme.floatingTexts[index - 1]['text'].length,
     extentOffset: meme.floatingTexts[index - 1]['text'].length,
   );
+  var deviceWidth = MediaQuery.of(context).size.width;
   return StreamWidget<MemeData>(
     stream: memeTools.stream,
     widget: (context, meme) => Column(
@@ -1039,7 +1054,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                   ),
                   onChanged: (value) {
                     meme.floatingTexts[index - 1]['text'] = value;
-                    memeTools.sinkMeme(meme);
+                    memeTools.sinkMeme(meme, deviceWidth);
                   },
                 ),
               ),
@@ -1064,7 +1079,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                           (meme.floatingTexts[index - 1]['textStyle']
                                   as TextStyle)
                               .copyWith(fontSize: value);
-                      memeTools.sinkMeme(meme);
+                      memeTools.sinkMeme(meme, deviceWidth);
                     },
                   ),
                 ),
@@ -1083,7 +1098,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                         .copyWith(
                             fontWeight:
                                 value ? FontWeight.bold : FontWeight.normal);
-                    memeTools.sinkMeme(meme);
+                    memeTools.sinkMeme(meme, deviceWidth);
                   },
                 ),
               ),
@@ -1101,7 +1116,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                         .copyWith(
                             fontStyle:
                                 value ? FontStyle.italic : FontStyle.normal);
-                    memeTools.sinkMeme(meme);
+                    memeTools.sinkMeme(meme, deviceWidth);
                   },
                 ),
               ),
@@ -1119,7 +1134,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                         onChanged: (value) {
                           meme.floatingTexts[index - 1]['textDirection'] =
                               value;
-                          memeTools.sinkMeme(meme);
+                          memeTools.sinkMeme(meme, deviceWidth);
                         },
                       ),
                       Text("Right to Left"),
@@ -1130,7 +1145,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                         onChanged: (value) {
                           meme.floatingTexts[index - 1]['textDirection'] =
                               value;
-                          memeTools.sinkMeme(meme);
+                          memeTools.sinkMeme(meme, deviceWidth);
                         },
                       ),
                     ],
@@ -1151,7 +1166,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                         onChanged: (value) {
                           meme.floatingTexts[index - 1]['textAlignment'] =
                               value;
-                          memeTools.sinkMeme(meme);
+                          memeTools.sinkMeme(meme, deviceWidth);
                         },
                       ),
                       Text("Center"),
@@ -1162,7 +1177,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                         onChanged: (value) {
                           meme.floatingTexts[index - 1]['textAlignment'] =
                               value;
-                          memeTools.sinkMeme(meme);
+                          memeTools.sinkMeme(meme, deviceWidth);
                         },
                       ),
                       Text("End"),
@@ -1173,7 +1188,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                         onChanged: (value) {
                           meme.floatingTexts[index - 1]['textAlignment'] =
                               value;
-                          memeTools.sinkMeme(meme);
+                          memeTools.sinkMeme(meme, deviceWidth);
                         },
                       ),
                     ],
@@ -1195,7 +1210,7 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                     meme.floatingTexts[index - 1]['textStyle'] = (meme
                             .floatingTexts[index - 1]['textStyle'] as TextStyle)
                         .copyWith(color: color);
-                    memeTools.sinkMeme(meme);
+                    memeTools.sinkMeme(meme, deviceWidth);
                   },
                 ),
               ),
@@ -1221,6 +1236,7 @@ class UiWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var deviceWidth = MediaQuery.of(context).size.width;
     return StreamWidget<MemeData>(
       stream: memeTools.stream,
       widget: (context, meme) {
@@ -1357,7 +1373,7 @@ class UiWidget extends StatelessWidget {
                                           75 / 2);
                                 }
                                 meme.floatingTexts[index - 1]['offset'] = of;
-                                memeTools.sinkMeme(meme);
+                                memeTools.sinkMeme(meme, deviceWidth);
                                 print(of);
                                 print(MediaQuery.of(context).viewPadding);
                               },

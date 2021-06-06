@@ -7,6 +7,7 @@ import 'package:meme_creator_2/tools.dart';
 import 'package:meme_creator_2/widgets.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' show get;
+import 'package:image/image.dart' as img;
 
 class ApiImagePicker extends StatefulWidget {
   @override
@@ -70,6 +71,7 @@ class _ApiImagePickerState extends State<ApiImagePicker>
 
   @override
   Widget build(BuildContext context) {
+    var deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text("Pick Image"),
@@ -166,139 +168,6 @@ class _ApiImagePickerState extends State<ApiImagePicker>
                                   descriptionLines: 1,
                                   imgurl: memes[index]['path'],
                                   onTap: () async {
-                                    Navigator.of(context).push(
-                                      PageRouteBuilder(
-                                        opaque: false,
-                                        pageBuilder: (context, animation,
-                                                secondaryAnimation) =>
-                                            LoadingScreen(),
-                                      ),
-                                    );
-                                    MemeData m = memeTools.data;
-                                    int i = m.images.length;
-                                    var response = await get(
-                                        Uri.parse(memes[index]['path']));
-                                    m.images.add({
-                                      'data': response.bodyBytes,
-                                      'index': i,
-                                      'expanded': true,
-                                      'topText': '',
-                                      'bottomText': '',
-                                      'topTextDirection': TextDirection.ltr,
-                                      'bottomTextDirection': TextDirection.ltr,
-                                      'topTextAlignment': TextAlign.center,
-                                      'bottomTextAlignment': TextAlign.center,
-                                      'topTextStyle': TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            offset: Offset(1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                        ],
-                                      ),
-                                      'bottomTextStyle': TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            offset: Offset(1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                        ],
-                                      ),
-                                    });
-                                    memeTools.sinkMeme(m);
-                                    Navigator.of(context)..pop()..pop();
-                                  },
-                                ),
-                              );
-                            },
-                          )
-                        : Center(
-                            child: Text(
-                                "There's no meme that contain those keywords."),
-                          ))
-                    : Center(child: CircularProgressIndicator()),
-                !a9welsLoading
-                    ? (a9welsmaps.where((element) {
-                              if (keyword.isNotEmpty) {
-                                for (var k
-                                    in keyword.toUpperCase().split(' ')) {
-                                  if ((element['name'] as String)
-                                      .toUpperCase()
-                                      .contains(k)) return true;
-                                }
-                                return false;
-                              } else {
-                                return true;
-                              }
-                            }).length !=
-                            0
-                        ? GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                            ),
-                            itemCount: a9welsmaps.where((element) {
-                              if (keyword.isNotEmpty) {
-                                for (var k
-                                    in keyword.toUpperCase().split(' ')) {
-                                  if ((element['name'] as String)
-                                      .toUpperCase()
-                                      .contains(k)) return true;
-                                }
-                                return false;
-                              } else {
-                                return true;
-                              }
-                            }).length,
-                            itemBuilder: (context, index) {
-                              var memes = a9welsmaps.where((element) {
-                                if (keyword.isNotEmpty) {
-                                  for (var k
-                                      in keyword.toUpperCase().split(' ')) {
-                                    if ((element['name'] as String)
-                                        .toUpperCase()
-                                        .contains(k)) return true;
-                                  }
-                                  return false;
-                                } else {
-                                  return true;
-                                }
-                              }).toList();
-                              return Padding(
-                                padding: const EdgeInsets.all(3.0),
-                                child: NewsCard(
-                                  description: memes[index]['name'],
-                                  descriptionLines: 1,
-                                  imgurl: memes[index]['path'],
-                                  onTap: () async {
                                     Navigator.of(context).push(PageRouteBuilder(
                                       opaque: false,
                                       pageBuilder: (context, animation,
@@ -364,7 +233,141 @@ class _ApiImagePickerState extends State<ApiImagePicker>
                                         ],
                                       ),
                                     });
-                                    memeTools.sinkMeme(m);
+                                    memeTools.imageHeightOperation(
+                                        m, deviceWidth);
+                                    Navigator.of(context)..pop()..pop();
+                                  },
+                                ),
+                              );
+                            },
+                          )
+                        : Center(
+                            child: Text(
+                                "There's no meme that contain those keywords."),
+                          ))
+                    : Center(child: CircularProgressIndicator()),
+                !a9welsLoading
+                    ? (a9welsmaps.where((element) {
+                              if (keyword.isNotEmpty) {
+                                for (var k
+                                    in keyword.toUpperCase().split(' ')) {
+                                  if ((element['name'] as String)
+                                      .toUpperCase()
+                                      .contains(k)) return true;
+                                }
+                                return false;
+                              } else {
+                                return true;
+                              }
+                            }).length !=
+                            0
+                        ? GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                            ),
+                            itemCount: a9welsmaps.where((element) {
+                              if (keyword.isNotEmpty) {
+                                for (var k
+                                    in keyword.toUpperCase().split(' ')) {
+                                  if ((element['name'] as String)
+                                      .toUpperCase()
+                                      .contains(k)) return true;
+                                }
+                                return false;
+                              } else {
+                                return true;
+                              }
+                            }).length,
+                            itemBuilder: (context, index) {
+                              var memes = a9welsmaps.where((element) {
+                                if (keyword.isNotEmpty) {
+                                  for (var k
+                                      in keyword.toUpperCase().split(' ')) {
+                                    if ((element['name'] as String)
+                                        .toUpperCase()
+                                        .contains(k)) return true;
+                                  }
+                                  return false;
+                                } else {
+                                  return true;
+                                }
+                              }).toList();
+                              return Padding(
+                                padding: const EdgeInsets.all(3.0),
+                                child: NewsCard(
+                                  description: memes[index]['name'],
+                                  descriptionLines: 1,
+                                  imgurl: memes[index]['path'],
+                                  onTap: () async {
+                                    var deviceSize =
+                                        MediaQuery.of(context).size;
+                                    Navigator.of(context).push(PageRouteBuilder(
+                                      opaque: false,
+                                      pageBuilder: (context, animation,
+                                              secondaryAnimation) =>
+                                          LoadingScreen(),
+                                    ));
+                                    MemeData m = memeTools.data;
+                                    int i = m.images.length;
+                                    var response = await get(
+                                        Uri.parse(memes[index]['path']));
+                                    m.images.add({
+                                      'data': response.bodyBytes,
+                                      'index': i,
+                                      'expanded': true,
+                                      'topText': '',
+                                      'bottomText': '',
+                                      'topTextDirection': TextDirection.ltr,
+                                      'bottomTextDirection': TextDirection.ltr,
+                                      'topTextAlignment': TextAlign.center,
+                                      'bottomTextAlignment': TextAlign.center,
+                                      'topTextStyle': TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        shadows: [
+                                          Shadow(
+                                            offset: Offset(1.12, 1.12),
+                                            color: Colors.black,
+                                          ),
+                                          Shadow(
+                                            offset: Offset(1.12, -1.12),
+                                            color: Colors.black,
+                                          ),
+                                          Shadow(
+                                            offset: Offset(-1.12, 1.12),
+                                            color: Colors.black,
+                                          ),
+                                          Shadow(
+                                            offset: Offset(-1.12, -1.12),
+                                            color: Colors.black,
+                                          ),
+                                        ],
+                                      ),
+                                      'bottomTextStyle': TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        shadows: [
+                                          Shadow(
+                                            offset: Offset(1.12, 1.12),
+                                            color: Colors.black,
+                                          ),
+                                          Shadow(
+                                            offset: Offset(1.12, -1.12),
+                                            color: Colors.black,
+                                          ),
+                                          Shadow(
+                                            offset: Offset(-1.12, 1.12),
+                                            color: Colors.black,
+                                          ),
+                                          Shadow(
+                                            offset: Offset(-1.12, -1.12),
+                                            color: Colors.black,
+                                          ),
+                                        ],
+                                      ),
+                                    });
+                                    memeTools.sinkMeme(m, deviceWidth);
                                     Navigator.of(context)..pop()..pop();
                                   },
                                 ),

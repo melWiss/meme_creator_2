@@ -39,6 +39,7 @@ class _MemeCreatorState extends State<MemeCreator> {
 
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
     return FutureBuilder<void>(
       future:
           SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
@@ -127,8 +128,10 @@ class _MemeCreatorState extends State<MemeCreator> {
                                             subtitle: Text(
                                                 "Add pictures from Device."),
                                             leading: Icon(Icons.image),
-                                            onTap: () =>
-                                                addImagesFromDevice(meme),
+                                            onTap: () => addImagesFromDevice(
+                                              meme,
+                                              screenSize.width,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -201,7 +204,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                         min: 0,
                                         onChanged: (value) {
                                           meme.containerPadding = value;
-                                          memeTools.sinkMeme(meme);
+                                          memeTools.sinkMeme(
+                                              meme, screenSize.width);
                                         },
                                       ),
                                     ),
@@ -227,7 +231,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                         min: 0,
                                         onChanged: (value) {
                                           meme.imagesPadding = value;
-                                          memeTools.sinkMeme(meme);
+                                          memeTools.sinkMeme(
+                                              meme, screenSize.width);
                                         },
                                       ),
                                     ),
@@ -253,7 +258,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                             .toString(),
                                         onChanged: (value) {
                                           meme.borderRadius = value;
-                                          memeTools.sinkMeme(meme);
+                                          memeTools.sinkMeme(
+                                              meme, screenSize.width);
                                         },
                                       ),
                                     ),
@@ -278,7 +284,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                             meme.imageHeight.toInt().toString(),
                                         onChanged: (value) {
                                           meme.imageHeight = value;
-                                          memeTools.sinkMeme(meme);
+                                          memeTools.sinkMeme(
+                                              meme, screenSize.width);
                                         },
                                       ),
                                     ),
@@ -305,7 +312,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                           context,
                                           meme.memeBackgroundColor,
                                         );
-                                        memeTools.sinkMeme(meme);
+                                        memeTools.sinkMeme(
+                                            meme, screenSize.width);
                                       },
                                     ),
                                   ),

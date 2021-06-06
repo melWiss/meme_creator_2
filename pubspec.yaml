@@ -13,6 +13,7 @@ dependencies:
   screenshot: ^0.3.0
   http: ^0.13.2
   path:
+  image: ^3.0.2
   multi_media_picker:
     git: https://github.com/ja2375/multi_media_picker
   image_save: ^4.0.1

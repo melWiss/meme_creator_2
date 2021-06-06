@@ -11,7 +11,9 @@ class MemeData {
   double imagesPadding = 5;
   double borderRadius = 0;
   double shadowWidth = 0;
-  double imageHeight = 25;
+  double imageHeight = 50;
+  double expandedImageHeight;
+  double unexpandedImageHeight;
   Color shadowColor = Colors.black;
   TextAlign titleAlign = TextAlign.center;
   TextDirection titleDirection = TextDirection.ltr;
