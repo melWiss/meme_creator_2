@@ -1255,7 +1255,7 @@ class UiWidget extends StatelessWidget {
                         return Container(
                           key: canvasKey,
                           width: MediaQuery.of(context).size.width,
-                          color: Colors.white,
+                          color: meme.memeBackgroundColor,
                           padding: EdgeInsets.all(meme.containerPadding),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,

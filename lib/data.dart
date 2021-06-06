@@ -15,6 +15,7 @@ class MemeData {
   Color shadowColor = Colors.black;
   TextAlign titleAlign = TextAlign.center;
   TextDirection titleDirection = TextDirection.ltr;
+  Color memeBackgroundColor = Colors.white;
   TextStyle titleStyle = TextStyle(
     fontSize: 30,
     fontWeight: FontWeight.bold,

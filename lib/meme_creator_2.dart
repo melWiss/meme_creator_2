@@ -284,6 +284,32 @@ class _MemeCreatorState extends State<MemeCreator> {
                                     ),
                                   ),
                                 ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 2),
+                                  child: Material(
+                                    elevation: 4,
+                                    borderRadius: BorderRadius.circular(5),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: ListTile(
+                                      leading: Icon(Icons.palette),
+                                      title: Text("Background Color"),
+                                      trailing: Container(
+                                        height: 20,
+                                        width: 30,
+                                        color: meme.memeBackgroundColor,
+                                      ),
+                                      onTap: () async {
+                                        meme.memeBackgroundColor =
+                                            await showColorPickerDialog(
+                                          context,
+                                          meme.memeBackgroundColor,
+                                        );
+                                        memeTools.sinkMeme(meme);
+                                      },
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
