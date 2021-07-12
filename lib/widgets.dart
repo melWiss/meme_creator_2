@@ -589,7 +589,9 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                                   child: Text('Cancel')),
                               TextButton(
                                   onPressed: () {
-                                    meme.images.removeAt(index);
+                                    // meme.images.removeAt(index);
+                                    meme.images.removeWhere(
+                                        (element) => element["index"] == index);
                                     meme.expandedImageHeight = null;
                                     meme.unexpandedImageHeight = null;
                                     memeTools.imageHeightOperation(

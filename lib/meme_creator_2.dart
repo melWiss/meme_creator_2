@@ -11,6 +11,7 @@ import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_save/image_save.dart';
+import 'package:meme_creator_2/scale_navig.dart';
 import 'package:multi_media_picker/multi_media_picker.dart';
 import 'package:meme_creator_2/tools.dart';
 import 'package:meme_creator_2/widgets.dart';
@@ -19,6 +20,7 @@ import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'api_image_picker.dart';
 import 'data.dart';
+import 'slide_navig.dart';
 
 class MemeCreator extends StatefulWidget {
   @override
@@ -30,6 +32,7 @@ class _MemeCreatorState extends State<MemeCreator> {
   bool saveLoading = false;
   bool shareLoading = false;
   GlobalKey canvasKey = GlobalKey();
+  GlobalKey pickImageKey = GlobalKey();
   ScrollController scrollController = ScrollController();
 
   @override
@@ -165,16 +168,40 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                 .6,
                                         child: listTileMaterial(
                                           ListTile(
+                                            key: pickImageKey,
                                             title: Text("Pick Image"),
                                             subtitle: Text(
                                                 "Pick images from the Internet"),
                                             leading:
                                                 Icon(Icons.add_photo_alternate),
                                             onTap: () {
+                                              var size =
+                                                  MediaQuery.of(context).size;
+                                              var obj = pickImageKey
+                                                      .currentContext
+                                                      .findRenderObject()
+                                                  as RenderBox;
+                                              var position = obj.localToGlobal(
+                                                Offset.zero,
+                                              );
+                                              print(position);
+                                              print(size);
+                                              print(obj.size);
                                               Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ApiImagePicker(),
+                                                SlideNavigation(
+                                                  child: ApiImagePicker(),
+                                                  // borderRadius: 40,
+                                                  curve: Curves.elasticOut,
+                                                  reverseCurve:
+                                                      Curves.easeInExpo,
+                                                  alignment: Alignment(
+                                                    position.dx / size.width,
+                                                    (position.dy -
+                                                            obj.size.height *
+                                                                3.3) /
+                                                        size.height,
+                                                  ),
+                                                  animationDuration: 650,
                                                 ),
                                               );
                                             },

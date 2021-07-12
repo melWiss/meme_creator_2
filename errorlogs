@@ -1,0 +1,22 @@
+Showing M2003J15SC logs:
+E/flutter (21949): [ERROR:flutter/lib/ui/ui_dart_state.cc(186)] Unhandled Exception: FileSystemException: Cannot open file, path = '/storage/emulated/0/DCIM/Facebook/FB_IMG_1623712396972.jpg' (OS Error: Permission denied, errno = 13)
+E/flutter (21949): #0      _File.throwIfError (dart:io/file_impl.dart:635:7)
+E/flutter (21949): #1      _File.openSync (dart:io/file_impl.dart:479:5)
+E/flutter (21949): #2      _File.readAsBytesSync (dart:io/file_impl.dart:539:18)
+E/flutter (21949): #3      addImagesFromDevice.<anonymous closure> (package:meme_creator_2/widgets.dart:947:23)
+E/flutter (21949): #4      List.forEach (dart:core-patch/growable_array.dart:403:8)
+E/flutter (21949): #5      addImagesFromDevice (package:meme_creator_2/widgets.dart:945:6)
+E/flutter (21949): <asynchronous suspension>
+E/flutter (21949): 
+I/flutter (21949): Offset(165.1, 473.8)
+I/flutter (21949): Size(392.7, 803.6)
+I/flutter (21949): Size(219.6, 72.0)
+E/flutter (21949): [ERROR:flutter/lib/ui/ui_dart_state.cc(186)] Unhandled Exception: FileSystemException: Cannot open file, path = '/storage/emulated/0/DCIM/Facebook/FB_IMG_1623283485335.jpg' (OS Error: Permission denied, errno = 13)
+E/flutter (21949): #0      _File.throwIfError (dart:io/file_impl.dart:635:7)
+E/flutter (21949): #1      _File.openSync (dart:io/file_impl.dart:479:5)
+E/flutter (21949): #2      _File.readAsBytesSync (dart:io/file_impl.dart:539:18)
+E/flutter (21949): #3      addImagesFromDevice.<anonymous closure> (package:meme_creator_2/widgets.dart:947:23)
+E/flutter (21949): #4      List.forEach (dart:core-patch/growable_array.dart:403:8)
+E/flutter (21949): #5      addImagesFromDevice (package:meme_creator_2/widgets.dart:945:6)
+E/flutter (21949): <asynchronous suspension>
+E/flutter (21949): 

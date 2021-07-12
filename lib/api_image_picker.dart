@@ -300,8 +300,6 @@ class _ApiImagePickerState extends State<ApiImagePicker>
                                   descriptionLines: 1,
                                   imgurl: memes[index]['path'],
                                   onTap: () async {
-                                    var deviceSize =
-                                        MediaQuery.of(context).size;
                                     Navigator.of(context).push(PageRouteBuilder(
                                       opaque: false,
                                       pageBuilder: (context, animation,
@@ -367,7 +365,8 @@ class _ApiImagePickerState extends State<ApiImagePicker>
                                         ],
                                       ),
                                     });
-                                    memeTools.sinkMeme(m, deviceWidth);
+                                    memeTools.imageHeightOperation(
+                                        m, deviceWidth);
                                     Navigator.of(context)..pop()..pop();
                                   },
                                 ),
