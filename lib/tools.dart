@@ -56,4 +56,4 @@ class MemeTools {
   }
 }
 
-MemeTools memeTools = MemeTools();
+//MemeTools memeTools = MemeTools();

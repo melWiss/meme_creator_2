@@ -10,6 +10,8 @@ import 'package:http/http.dart' show get;
 import 'package:image/image.dart' as img;
 
 class ApiImagePicker extends StatefulWidget {
+  final MemeTools memeController;
+  ApiImagePicker({@required this.memeController});
   @override
   _ApiImagePickerState createState() => _ApiImagePickerState();
 }
@@ -27,9 +29,11 @@ class _ApiImagePickerState extends State<ApiImagePicker>
   String keyword = '';
   int index = 0;
   TabController tabController;
+  MemeTools memeTools;
   @override
   void initState() {
     super.initState();
+    memeTools = widget.memeController;
     tabController = TabController(length: 2, vsync: this);
     get(Uri.parse(join(base, 'api', 'images'))).then((value) {
       List l = jsonDecode(value.body);
@@ -49,7 +53,7 @@ class _ApiImagePickerState extends State<ApiImagePicker>
         memesLoading = false;
       });
     }).catchError((err) {
-      print(err);
+      debugPrint(err);
     });
     get(Uri.parse(join(base, 'api', 'a9wels'))).then((value) {
       List l = jsonDecode(value.body);
@@ -65,7 +69,7 @@ class _ApiImagePickerState extends State<ApiImagePicker>
         a9welsLoading = false;
       });
     }).catchError((err) {
-      print(err);
+      debugPrint(err);
     });
   }
 
