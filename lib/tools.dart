@@ -35,6 +35,7 @@ class MemeTools {
       var imageWidth = img.decodeImage(element['data']).width;
       var aspectRatio = imageWidth / imageHeight;
       var res = deviceWidth / aspectRatio;
+      // debugPrint("imageHeight= $imageHeight, imageWidth= $imageWidth");
       if (expandedImageHeight == null || expandedImageHeight > res) {
         expandedImageHeight = res;
         unexpandedImageHeight = expandedImageHeight / 2;
@@ -45,6 +46,8 @@ class MemeTools {
       _data.expandedImageHeight = expandedImageHeight;
       _data.unexpandedImageHeight = unexpandedImageHeight;
     }
+    // debugPrint(
+    //     "expandedImageHeight= $expandedImageHeight, unexpandedImageHeight= $unexpandedImageHeight");
     _sink.add(_data);
   }
 
@@ -53,4 +56,4 @@ class MemeTools {
   }
 }
 
-MemeTools memeTools = MemeTools();
+//MemeTools memeTools = MemeTools();

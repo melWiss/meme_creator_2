@@ -11,30 +11,45 @@ import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_save/image_save.dart';
+export 'package:image_save/image_save.dart';
+import 'package:meme_creator_2/scale_navig.dart';
 import 'package:multi_media_picker/multi_media_picker.dart';
 import 'package:meme_creator_2/tools.dart';
 import 'package:meme_creator_2/widgets.dart';
 import 'package:screenshot/screenshot.dart';
+export 'package:screenshot/screenshot.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
+export 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'api_image_picker.dart';
 import 'data.dart';
+import 'slide_navig.dart';
 
 class MemeCreator extends StatefulWidget {
+  final MemeTools memeController;
+  final ScreenshotController screenshotController;
+  MemeCreator({
+    @required this.memeController,
+    @required this.screenshotController,
+  });
   @override
   _MemeCreatorState createState() => _MemeCreatorState();
 }
 
 class _MemeCreatorState extends State<MemeCreator> {
-  ScreenshotController screenshotController = ScreenshotController();
   bool saveLoading = false;
   bool shareLoading = false;
   GlobalKey canvasKey = GlobalKey();
+  GlobalKey pickImageKey = GlobalKey();
   ScrollController scrollController = ScrollController();
+  MemeTools memeTools;
+  ScreenshotController screenshotController;
 
   @override
   void initState() {
     super.initState();
+    memeTools = widget.memeController;
+    screenshotController = widget.screenshotController;
   }
 
   @override
@@ -49,6 +64,7 @@ class _MemeCreatorState extends State<MemeCreator> {
             scrollController: scrollController,
             screenshotController: screenshotController,
             canvasKey: canvasKey,
+            memeTools: memeTools,
           ),
         ),
         backgroundColor: Colors.black,
@@ -111,8 +127,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                             onTap: () {
                                               bottomSheet(
                                                 context,
-                                                (context) =>
-                                                    memeTitleSheet(meme),
+                                                (context) => memeTitleSheet(
+                                                    meme, memeTools),
                                               );
                                             },
                                           ),
@@ -129,9 +145,9 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                 "Add pictures from Device."),
                                             leading: Icon(Icons.image),
                                             onTap: () => addImagesFromDevice(
-                                              meme,
-                                              screenSize.width,
-                                            ),
+                                                meme,
+                                                screenSize.width,
+                                                memeTools),
                                           ),
                                         ),
                                       ),
@@ -153,6 +169,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                   canvasKey,
                                                   meme,
                                                   context,
+                                                  memeTools,
                                                 ),
                                               );
                                             },
@@ -165,16 +182,42 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                 .6,
                                         child: listTileMaterial(
                                           ListTile(
+                                            key: pickImageKey,
                                             title: Text("Pick Image"),
                                             subtitle: Text(
                                                 "Pick images from the Internet"),
                                             leading:
                                                 Icon(Icons.add_photo_alternate),
                                             onTap: () {
+                                              var size =
+                                                  MediaQuery.of(context).size;
+                                              var obj = pickImageKey
+                                                      .currentContext
+                                                      .findRenderObject()
+                                                  as RenderBox;
+                                              var position = obj.localToGlobal(
+                                                Offset.zero,
+                                              );
+                                              debugPrint(position.toString());
+                                              debugPrint(size.toString());
+                                              debugPrint(obj.size.toString());
                                               Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ApiImagePicker(),
+                                                SlideNavigation(
+                                                  child: ApiImagePicker(
+                                                    memeController: memeTools,
+                                                  ),
+                                                  // borderRadius: 40,
+                                                  curve: Curves.elasticOut,
+                                                  reverseCurve:
+                                                      Curves.easeInExpo,
+                                                  alignment: Alignment(
+                                                    position.dx / size.width,
+                                                    (position.dy -
+                                                            obj.size.height *
+                                                                3.3) /
+                                                        size.height,
+                                                  ),
+                                                  animationDuration: 650,
                                                 ),
                                               );
                                             },
@@ -328,7 +371,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                 );
               },
             ),
-            Padding(
+            /*Padding(
               padding: EdgeInsets.only(left: 5),
               child: FloatingActionButton(
                 child: saveLoading
@@ -383,7 +426,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                           saveLoading = false;
                         });
                       }).catchError((onError) {
-                        print(onError);
+                        debugPrint(onError);
                         setState(() {
                           saveLoading = false;
                         });
@@ -437,7 +480,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                           shareLoading = false;
                         });
                       }).catchError((onError) {
-                        print(onError);
+                        debugPrint(onError);
                         setState(() {
                           shareLoading = false;
                         });
@@ -446,7 +489,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                   }
                 },
               ),
-            ),
+            ),*/
           ],
         ),
       ),

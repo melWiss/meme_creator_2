@@ -185,7 +185,8 @@ class NewsCard extends StatelessWidget {
   }
 }
 
-Widget memeFace(BuildContext context, Map<String, dynamic> memeData) {
+Widget memeFace(
+    BuildContext context, Map<String, dynamic> memeData, MemeTools memeTools) {
   var meme = memeTools.data;
   return Stack(
     children: [
@@ -264,15 +265,19 @@ Future bottomSheet(
     ),
     isScrollControlled: true,
     builder: (context) {
-      return Container(
-        height: MediaQuery.of(context).size.height * .5,
-        child: builder(context),
+      return Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: Container(
+          height: MediaQuery.of(context).size.height * .5,
+          child: builder(context),
+        ),
       );
     },
   );
 }
 
-Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
+Widget imageSheet(
+    BuildContext context, Map<String, dynamic> memeData, MemeTools memeTools) {
   var deviceWidth = MediaQuery.of(context).size.width;
   TextEditingController caption1 =
       TextEditingController(text: memeData['topText']);
@@ -319,10 +324,10 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                   textDirection: memeData['topTextDirection'],
                   decoration: InputDecoration(
                     hintText: "Caption #1",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
+                    // border: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   borderSide: BorderSide(color: Colors.black),
+                    // ),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10,
                     ),
@@ -343,10 +348,10 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                   // textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
                     hintText: "Caption #2",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
+                    // border: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   borderSide: BorderSide(color: Colors.black),
+                    // ),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10,
                     ),
@@ -589,7 +594,9 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                                   child: Text('Cancel')),
                               TextButton(
                                   onPressed: () {
-                                    meme.images.removeAt(index);
+                                    // meme.images.removeAt(index);
+                                    meme.images.removeWhere(
+                                        (element) => element["index"] == index);
                                     meme.expandedImageHeight = null;
                                     meme.unexpandedImageHeight = null;
                                     memeTools.imageHeightOperation(
@@ -631,6 +638,7 @@ Widget floatingTextAlert(
   GlobalKey canvasKey,
   MemeData meme,
   BuildContext context,
+  MemeTools memeTools,
 ) {
   var deviceWidth = MediaQuery.of(context).size.width;
   String m = "";
@@ -695,7 +703,7 @@ Widget floatingTextAlert(
   );
 }
 
-Widget memeTitleSheet(MemeData meme) {
+Widget memeTitleSheet(MemeData meme, MemeTools memeTools) {
   TextEditingController textEditingController =
       TextEditingController(text: meme.title);
   textEditingController.selection = TextSelection(
@@ -736,10 +744,16 @@ Widget memeTitleSheet(MemeData meme) {
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     hintText: "Write the meme title here",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
+                    // border: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   borderSide: BorderSide(color: Colors.black),
+                    // ),
+                    // focusedBorder: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   borderSide: BorderSide(
+                    //     color: Theme.of(context).primaryColor,
+                    //   ),
+                    // ),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10,
                     ),
@@ -937,7 +951,8 @@ Widget memeTitleSheet(MemeData meme) {
   );
 }
 
-Future<void> addImagesFromDevice(MemeData meme, double deviceWidth) async {
+Future<void> addImagesFromDevice(
+    MemeData meme, double deviceWidth, MemeTools memeTools) async {
   var fs = await MultiMediaPicker.pickImages();
   int i = 0;
   fs.forEach((element) {
@@ -1004,7 +1019,8 @@ Future<void> addImagesFromDevice(MemeData meme, double deviceWidth) async {
   memeTools.imageHeightOperation(meme, deviceWidth);
 }
 
-Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
+Widget floatingTextSheet(
+    BuildContext context, MemeData meme, int index, MemeTools memeTools) {
   TextEditingController caption1 =
       TextEditingController(text: meme.floatingTexts[index - 1]['text']);
   caption1.selection = TextSelection(
@@ -1044,10 +1060,10 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     hintText: "Write your text here",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
+                    // border: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   borderSide: BorderSide(color: Colors.black),
+                    // ),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10,
                     ),
@@ -1228,11 +1244,13 @@ class UiWidget extends StatelessWidget {
     @required this.scrollController,
     @required this.screenshotController,
     @required this.canvasKey,
+    @required this.memeTools,
   }) : super(key: key);
 
   final ScrollController scrollController;
   final ScreenshotController screenshotController;
   final GlobalKey<State<StatefulWidget>> canvasKey;
+  final MemeTools memeTools;
 
   @override
   Widget build(BuildContext context) {
@@ -1303,14 +1321,12 @@ class UiWidget extends StatelessWidget {
                                         onTap: () {
                                           bottomSheet(
                                             context,
-                                            (context) => imageSheet(
-                                              context,
-                                              meme.images[index],
-                                            ),
+                                            (context) => imageSheet(context,
+                                                meme.images[index], memeTools),
                                           );
                                         },
-                                        child: memeFace(
-                                            context, meme.images[index]),
+                                        child: memeFace(context,
+                                            meme.images[index], memeTools),
                                       ),
                                     ),
                                   ),
@@ -1331,6 +1347,7 @@ class UiWidget extends StatelessWidget {
                                   context,
                                   meme,
                                   index,
+                                  memeTools,
                                 ),
                               );
                             },
@@ -1374,8 +1391,10 @@ class UiWidget extends StatelessWidget {
                                 }
                                 meme.floatingTexts[index - 1]['offset'] = of;
                                 memeTools.sinkMeme(meme, deviceWidth);
-                                print(of);
-                                print(MediaQuery.of(context).viewPadding);
+                                debugPrint(of.toString());
+                                debugPrint(MediaQuery.of(context)
+                                    .viewPadding
+                                    .toString());
                               },
                               feedback: Material(
                                 color: Colors.transparent,
