@@ -28,21 +28,21 @@ class MemeTools {
   void imageHeightOperation(MemeData memeData, double deviceWidth) {
     _data = memeData;
     List<Map<String, dynamic>> images = _data.images;
-    double unexpandedImageHeight;
-    double expandedImageHeight;
+    double? unexpandedImageHeight;
+    double? expandedImageHeight;
     images.forEach((element) {
-      var imageHeight = img.decodeImage(element['data']).height;
-      var imageWidth = img.decodeImage(element['data']).width;
+      var imageHeight = img.decodeImage(element['data'])!.height;
+      var imageWidth = img.decodeImage(element['data'])!.width;
       var aspectRatio = imageWidth / imageHeight;
       var res = deviceWidth / aspectRatio;
       // debugPrint("imageHeight= $imageHeight, imageWidth= $imageWidth");
-      if (expandedImageHeight == null || expandedImageHeight > res) {
+      if (expandedImageHeight == null || expandedImageHeight! > res) {
         expandedImageHeight = res;
-        unexpandedImageHeight = expandedImageHeight / 2;
+        unexpandedImageHeight = expandedImageHeight! / 2;
       }
     });
     if (_data.expandedImageHeight == null ||
-        expandedImageHeight < _data.expandedImageHeight) {
+        expandedImageHeight! < _data.expandedImageHeight!) {
       _data.expandedImageHeight = expandedImageHeight;
       _data.unexpandedImageHeight = unexpandedImageHeight;
     }

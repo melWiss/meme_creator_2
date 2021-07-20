@@ -107,9 +107,11 @@ packages:
   multi_media_picker:
     dependency: "direct main"
     description:
-      path: "../../Github/multi_media_picker"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "39fb71fa5add0fa1d32cc3d894bd47d584d95308"
+      url: "https://github.com/melWiss/multi_media_picker"
+    source: git
     version: "0.2.5"
   path:
     dependency: "direct main"

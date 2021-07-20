@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:meme_creator_2/tools.dart';
 import 'package:multi_media_picker/multi_media_picker.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:image/image.dart' as img;
+//import 'package:image/image.dart' as img;
 
 import 'data.dart';
 
 class StreamWidget<T> extends StatelessWidget {
-  final Stream<T> stream;
-  final Widget Function(BuildContext context, T data) widget;
-  final Widget Function(Object error) onError;
-  final Widget Function() onWait;
+  final Stream<T>? stream;
+  final Widget Function(BuildContext context, T? data)? widget;
+  final Widget Function(Object? error)? onError;
+  final Widget Function()? onWait;
   const StreamWidget({
     this.stream,
     this.widget,
@@ -25,21 +25,21 @@ class StreamWidget<T> extends StatelessWidget {
       stream: stream,
       builder: (context, snapshot) {
         if (snapshot.hasData)
-          return widget(context, snapshot.data);
+          return widget!(context, snapshot.data);
         else if (snapshot.hasError) {
           if (onError == null)
             return Center(
               child: Text("Error while loading data:\n${snapshot.error}"),
             );
           else
-            return onError(snapshot.error);
+            return onError!(snapshot.error);
         } else {
           if (onWait == null)
             return Center(
               child: CircularProgressIndicator(),
             );
           else
-            return onWait();
+            return onWait!();
         }
       },
     );
@@ -47,10 +47,10 @@ class StreamWidget<T> extends StatelessWidget {
 }
 
 class FutureWidget<T> extends StatelessWidget {
-  final Future<T> future;
-  final Widget Function(BuildContext context, T data) widget;
-  final Widget Function(Object error) onError;
-  final Widget Function() onWait;
+  final Future<T>? future;
+  final Widget Function(BuildContext context, T? data)? widget;
+  final Widget Function(Object? error)? onError;
+  final Widget Function()? onWait;
   const FutureWidget({this.future, this.widget, this.onError, this.onWait});
 
   @override
@@ -59,21 +59,21 @@ class FutureWidget<T> extends StatelessWidget {
       future: future,
       builder: (context, snapshot) {
         if (snapshot.hasData)
-          return widget(context, snapshot.data);
+          return widget!(context, snapshot.data);
         else if (snapshot.hasError) {
           if (onError == null)
             return Center(
               child: Text("Error while loading data:\n${snapshot.error}"),
             );
           else
-            return onError(snapshot.error);
+            return onError!(snapshot.error);
         } else {
           if (onWait == null)
             return Center(
               child: CircularProgressIndicator(),
             );
           else
-            return onWait();
+            return onWait!();
         }
       },
     );
@@ -81,17 +81,17 @@ class FutureWidget<T> extends StatelessWidget {
 }
 
 class NewsCard extends StatelessWidget {
-  final Color color;
-  final Color backgroundColor;
-  final String imgurl;
+  final Color? color;
+  final Color? backgroundColor;
+  final String? imgurl;
   final String title;
-  final String description;
+  final String? description;
   final double size;
-  final TextStyle titleStyle;
-  final TextStyle descriptionStyle;
+  final TextStyle? titleStyle;
+  final TextStyle? descriptionStyle;
   final int descriptionLines;
   final double radius;
-  final void Function() onTap;
+  final void Function()? onTap;
   NewsCard({
     this.size = 100,
     this.color,
@@ -122,7 +122,7 @@ class NewsCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               Image.network(
-                imgurl,
+                imgurl!,
                 height: size,
                 width: size,
                 fit: BoxFit.cover,
@@ -162,7 +162,7 @@ class NewsCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(5),
                       child: Text(
-                        description,
+                        description!,
                         textAlign: TextAlign.left,
                         style: descriptionStyle ??
                             TextStyle(
@@ -199,8 +199,8 @@ Widget memeFace(
                 meme.imagesPadding * 2 -
                 meme.containerPadding,
         height: (memeData['expanded']
-                ? meme.expandedImageHeight * meme.imageHeight * .01
-                : meme.unexpandedImageHeight * meme.imageHeight * .01) -
+                ? meme.expandedImageHeight! * meme.imageHeight * .01
+                : meme.unexpandedImageHeight! * meme.imageHeight * .01) -
             meme.imagesPadding * 2 -
             meme.containerPadding *
                 2, //I'm not quite sure about this value, u may delete it or change it later
@@ -291,7 +291,7 @@ Widget imageSheet(
     baseOffset: caption2.text.length,
     extentOffset: caption2.text.length,
   );
-  int index = memeData['index'];
+  int? index = memeData['index'];
   return StreamWidget<MemeData>(
     stream: memeTools.stream,
     widget: (context, meme) => Column(
@@ -334,7 +334,7 @@ Widget imageSheet(
                   ),
                   onChanged: (value) {
                     memeData['topText'] = value;
-                    memeTools.sinkMeme(meme, deviceWidth);
+                    memeTools.sinkMeme(meme!, deviceWidth);
                   },
                 ),
               ),
@@ -358,7 +358,7 @@ Widget imageSheet(
                   ),
                   onChanged: (value) {
                     memeData['bottomText'] = value;
-                    memeTools.sinkMeme(meme, deviceWidth);
+                    memeTools.sinkMeme(meme!, deviceWidth);
                   },
                 ),
               ),
@@ -371,12 +371,12 @@ Widget imageSheet(
                     title: Text('Caption Size'),
                     leading: Icon(Icons.text_fields),
                     subtitle: Slider(
-                      value: (memeData['topTextStyle'] as TextStyle).fontSize,
+                      value: (memeData['topTextStyle'] as TextStyle).fontSize!,
                       max: 50,
                       min: 10,
                       divisions: 40,
                       label: (memeData['topTextStyle'] as TextStyle)
-                          .fontSize
+                          .fontSize!
                           .toInt()
                           .toString(),
                       onChanged: (double value) {
@@ -386,7 +386,7 @@ Widget imageSheet(
                         memeData['bottomTextStyle'] =
                             (memeData['bottomTextStyle'] as TextStyle)
                                 .copyWith(fontSize: value);
-                        memeTools.sinkMeme(meme, deviceWidth);
+                        memeTools.sinkMeme(meme!, deviceWidth);
                       },
                     ),
                   ),
@@ -411,7 +411,7 @@ Widget imageSheet(
                           (memeData['bottomTextStyle'] as TextStyle).copyWith(
                               fontWeight:
                                   value ? FontWeight.bold : FontWeight.normal);
-                      memeTools.sinkMeme(meme, deviceWidth);
+                      memeTools.sinkMeme(meme!, deviceWidth);
                     },
                   ),
                 ),
@@ -435,7 +435,7 @@ Widget imageSheet(
                           (memeData['bottomTextStyle'] as TextStyle).copyWith(
                               fontStyle:
                                   value ? FontStyle.italic : FontStyle.normal);
-                      memeTools.sinkMeme(meme, deviceWidth);
+                      memeTools.sinkMeme(meme!, deviceWidth);
                     },
                   ),
                 ),
@@ -452,7 +452,7 @@ Widget imageSheet(
                     onChanged: (value) {
                       memeData['expanded'] = !memeData['expanded'];
 
-                      memeTools.sinkMeme(meme, deviceWidth);
+                      memeTools.sinkMeme(meme!, deviceWidth);
                     },
                   ),
                 ),
@@ -474,7 +474,7 @@ Widget imageSheet(
                           onChanged: (value) {
                             memeData['topTextDirection'] = value;
                             memeData['bottomTextDirection'] = value;
-                            memeTools.sinkMeme(meme, deviceWidth);
+                            memeTools.sinkMeme(meme!, deviceWidth);
                           },
                         ),
                         Text("Right to Left"),
@@ -484,7 +484,7 @@ Widget imageSheet(
                           onChanged: (value) {
                             memeData['topTextDirection'] = value;
                             memeData['bottomTextDirection'] = value;
-                            memeTools.sinkMeme(meme, deviceWidth);
+                            memeTools.sinkMeme(meme!, deviceWidth);
                           },
                         ),
                       ],
@@ -509,7 +509,7 @@ Widget imageSheet(
                           onChanged: (value) {
                             memeData['topTextAlignment'] = value;
                             memeData['bottomTextAlignment'] = value;
-                            memeTools.sinkMeme(meme, deviceWidth);
+                            memeTools.sinkMeme(meme!, deviceWidth);
                           },
                         ),
                         Text("Center"),
@@ -519,7 +519,7 @@ Widget imageSheet(
                           onChanged: (value) {
                             memeData['topTextAlignment'] = value;
                             memeData['bottomTextAlignment'] = value;
-                            memeTools.sinkMeme(meme, deviceWidth);
+                            memeTools.sinkMeme(meme!, deviceWidth);
                           },
                         ),
                         Text("End"),
@@ -529,7 +529,7 @@ Widget imageSheet(
                           onChanged: (value) {
                             memeData['topTextAlignment'] = value;
                             memeData['bottomTextAlignment'] = value;
-                            memeTools.sinkMeme(meme, deviceWidth);
+                            memeTools.sinkMeme(meme!, deviceWidth);
                           },
                         ),
                       ],
@@ -552,7 +552,7 @@ Widget imageSheet(
                     ),
                     onTap: () async {
                       var color = await showColorPickerDialog(
-                          context, meme.titleStyle.color);
+                          context, meme!.titleStyle.color!);
                       memeData['topTextStyle'] =
                           (memeData['topTextStyle'] as TextStyle)
                               .copyWith(color: color);
@@ -594,8 +594,8 @@ Widget imageSheet(
                                   child: Text('Cancel')),
                               TextButton(
                                   onPressed: () {
-                                    // meme.images.removeAt(index);
-                                    meme.images.removeWhere(
+                                    // meme!.images.removeAt(index);
+                                    meme!.images.removeWhere(
                                         (element) => element["index"] == index);
                                     meme.expandedImageHeight = null;
                                     meme.unexpandedImageHeight = null;
@@ -638,7 +638,7 @@ Widget floatingTextAlert(
   GlobalKey canvasKey,
   MemeData meme,
   BuildContext context,
-  MemeTools memeTools,
+  MemeTools? memeTools,
 ) {
   var deviceWidth = MediaQuery.of(context).size.width;
   String m = "";
@@ -649,7 +649,7 @@ Widget floatingTextAlert(
       TextButton(
         child: Text("Add Text"),
         onPressed: () {
-          var b = canvasKey.currentContext.findRenderObject() as RenderBox;
+          var b = canvasKey.currentContext!.findRenderObject() as RenderBox?;
           if (m.isNotEmpty) {
             meme.floatingTexts.add({
               "text": m,
@@ -658,7 +658,7 @@ Widget floatingTextAlert(
               "textDirection": TextDirection.ltr,
               "offset": Offset(
                 MediaQuery.of(context).size.width * .5,
-                b.size.height / 2,
+                b!.size.height / 2,
               ),
               "textStyle": TextStyle(
                 fontSize: 30,
@@ -683,7 +683,7 @@ Widget floatingTextAlert(
                 ],
               ),
             });
-            memeTools.sinkMeme(meme, deviceWidth);
+            memeTools!.sinkMeme(meme, deviceWidth);
             Navigator.of(context).pop();
           }
         },
@@ -740,7 +740,7 @@ Widget memeTitleSheet(MemeData meme, MemeTools memeTools) {
                   controller: textEditingController,
                   textCapitalization: TextCapitalization.sentences,
                   maxLines: null,
-                  textDirection: meme.titleDirection,
+                  textDirection: meme!.titleDirection,
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     hintText: "Write the meme title here",
@@ -773,11 +773,11 @@ Widget memeTitleSheet(MemeData meme, MemeTools memeTools) {
                     title: Text('Title Size'),
                     leading: Icon(Icons.text_fields),
                     subtitle: Slider(
-                      value: meme.titleStyle.fontSize,
+                      value: meme.titleStyle.fontSize!,
                       max: 75,
                       min: 14,
                       divisions: 61,
-                      label: meme.titleStyle.fontSize.toInt().toString(),
+                      label: meme.titleStyle.fontSize!.toInt().toString(),
                       onChanged: (double value) {
                         meme.titleStyle = meme.titleStyle.copyWith(
                           fontSize: value,
@@ -936,7 +936,7 @@ Widget memeTitleSheet(MemeData meme, MemeTools memeTools) {
                     ),
                     onTap: () async {
                       var color = await showColorPickerDialog(
-                          context, meme.titleStyle.color);
+                          context, meme.titleStyle.color!);
                       meme.titleStyle = meme.titleStyle.copyWith(color: color);
                       memeTools.sinkMeme(meme, deviceWidth);
                     },
@@ -953,9 +953,9 @@ Widget memeTitleSheet(MemeData meme, MemeTools memeTools) {
 
 Future<void> addImagesFromDevice(
     MemeData meme, double deviceWidth, MemeTools memeTools) async {
-  var fs = await MultiMediaPicker.pickImages();
+  var fs = await (MultiMediaPicker.pickImages());
   int i = 0;
-  fs.forEach((element) {
+  fs!.forEach((element) {
     meme.images.add({
       'data': element.readAsBytesSync(),
       'index': i,
@@ -1015,7 +1015,7 @@ Future<void> addImagesFromDevice(
   });
   if (fs.length % 2 == 1)
     meme.images[meme.images.length - 1]['expanded'] = true;
-  // memeTools.sinkMeme(meme, deviceWidth);
+  // memeTools.sinkMeme(meme!, deviceWidth);
   memeTools.imageHeightOperation(meme, deviceWidth);
 }
 
@@ -1055,7 +1055,8 @@ Widget floatingTextSheet(
                 child: TextField(
                   controller: caption1,
                   maxLines: null,
-                  textDirection: meme.floatingTexts[index - 1]['textDirection'],
+                  textDirection: meme!.floatingTexts[index - 1]
+                      ['textDirection'],
                   keyboardType: TextInputType.multiline,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
@@ -1081,13 +1082,13 @@ Widget floatingTextSheet(
                   subtitle: Slider(
                     value: (meme.floatingTexts[index - 1]['textStyle']
                             as TextStyle)
-                        .fontSize,
+                        .fontSize!,
                     max: 50,
                     min: 10,
                     divisions: 40,
                     label: (meme.floatingTexts[index - 1]['textStyle']
                             as TextStyle)
-                        .fontSize
+                        .fontSize!
                         .toInt()
                         .toString(),
                     onChanged: (double value) {
@@ -1240,25 +1241,25 @@ Widget floatingTextSheet(
 
 class UiWidget extends StatelessWidget {
   const UiWidget({
-    Key key,
-    @required this.scrollController,
-    @required this.screenshotController,
-    @required this.canvasKey,
-    @required this.memeTools,
+    Key? key,
+    required this.scrollController,
+    required this.screenshotController,
+    required this.canvasKey,
+    required this.memeTools,
   }) : super(key: key);
 
   final ScrollController scrollController;
-  final ScreenshotController screenshotController;
+  final ScreenshotController? screenshotController;
   final GlobalKey<State<StatefulWidget>> canvasKey;
-  final MemeTools memeTools;
+  final MemeTools? memeTools;
 
   @override
   Widget build(BuildContext context) {
     var deviceWidth = MediaQuery.of(context).size.width;
     return StreamWidget<MemeData>(
-      stream: memeTools.stream,
+      stream: memeTools!.stream,
       widget: (context, meme) {
-        if (meme.title.isEmpty && meme.images.isEmpty) {
+        if (meme!.title.isEmpty && meme.images.isEmpty) {
           return Container(
             color: Colors.white,
             padding: EdgeInsets.all(5),
@@ -1280,7 +1281,7 @@ class UiWidget extends StatelessWidget {
                 bottom: 75,
               ),
               child: Screenshot(
-                controller: screenshotController,
+                controller: screenshotController!,
                 child: Stack(
                   children: List.generate(
                     meme.floatingTexts.length + 1,
@@ -1322,11 +1323,11 @@ class UiWidget extends StatelessWidget {
                                           bottomSheet(
                                             context,
                                             (context) => imageSheet(context,
-                                                meme.images[index], memeTools),
+                                                meme.images[index], memeTools!),
                                           );
                                         },
                                         child: memeFace(context,
-                                            meme.images[index], memeTools),
+                                            meme.images[index], memeTools!),
                                       ),
                                     ),
                                   ),
@@ -1347,7 +1348,7 @@ class UiWidget extends StatelessWidget {
                                   context,
                                   meme,
                                   index,
-                                  memeTools,
+                                  memeTools!,
                                 ),
                               );
                             },
@@ -1362,7 +1363,7 @@ class UiWidget extends StatelessWidget {
                                     ['textStyle'],
                               ),
                               onDragEnd: (details) {
-                                var obj = canvasKey.currentContext;
+                                var obj = canvasKey.currentContext!;
                                 var box = obj.findRenderObject() as RenderBox;
                                 Offset of;
                                 if (MediaQuery.of(context).size.height >=
@@ -1390,7 +1391,7 @@ class UiWidget extends StatelessWidget {
                                           75 / 2);
                                 }
                                 meme.floatingTexts[index - 1]['offset'] = of;
-                                memeTools.sinkMeme(meme, deviceWidth);
+                                memeTools!.sinkMeme(meme, deviceWidth);
                                 debugPrint(of.toString());
                                 debugPrint(MediaQuery.of(context)
                                     .viewPadding

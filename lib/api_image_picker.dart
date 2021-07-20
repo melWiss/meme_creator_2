@@ -10,8 +10,8 @@ import 'package:http/http.dart' show get;
 import 'package:image/image.dart' as img;
 
 class ApiImagePicker extends StatefulWidget {
-  final MemeTools memeController;
-  ApiImagePicker({@required this.memeController});
+  final MemeTools? memeController;
+  ApiImagePicker({required this.memeController});
   @override
   _ApiImagePickerState createState() => _ApiImagePickerState();
 }
@@ -28,8 +28,8 @@ class _ApiImagePickerState extends State<ApiImagePicker>
   bool a9welsLoading = true;
   String keyword = '';
   int index = 0;
-  TabController tabController;
-  MemeTools memeTools;
+  TabController? tabController;
+  MemeTools? memeTools;
   @override
   void initState() {
     super.initState();
@@ -41,11 +41,11 @@ class _ApiImagePickerState extends State<ApiImagePicker>
         memesUrls.add({
           'path': base + element,
           'name': (element as String)
-              .split('/')[(element as String).split('/').length - 1]
+              .split('/')[element.split('/').length - 1]
               .substring(
                   0,
-                  (element as String)
-                      .split('/')[(element as String).split('/').length - 1]
+                  element
+                      .split('/')[element.split('/').length - 1]
                       .indexOf('.jpeg')),
         });
       });
@@ -178,7 +178,7 @@ class _ApiImagePickerState extends State<ApiImagePicker>
                                               secondaryAnimation) =>
                                           LoadingScreen(),
                                     ));
-                                    MemeData m = memeTools.data;
+                                    MemeData m = memeTools!.data;
                                     int i = m.images.length;
                                     var response = await get(
                                         Uri.parse(memes[index]['path']));
@@ -237,7 +237,7 @@ class _ApiImagePickerState extends State<ApiImagePicker>
                                         ],
                                       ),
                                     });
-                                    memeTools.imageHeightOperation(
+                                    memeTools!.imageHeightOperation(
                                         m, deviceWidth);
                                     Navigator.of(context)..pop()..pop();
                                   },
@@ -314,7 +314,7 @@ class _ApiImagePickerState extends State<ApiImagePicker>
                                               secondaryAnimation) =>
                                           LoadingScreen(),
                                     ));
-                                    MemeData m = memeTools.data;
+                                    MemeData m = memeTools!.data;
                                     int i = m.images.length;
                                     var response = await get(
                                         Uri.parse(memes[index]['path']));
@@ -373,7 +373,7 @@ class _ApiImagePickerState extends State<ApiImagePicker>
                                         ],
                                       ),
                                     });
-                                    memeTools.imageHeightOperation(
+                                    memeTools!.imageHeightOperation(
                                         m, deviceWidth);
                                     Navigator.of(context)..pop()..pop();
                                   },
@@ -401,7 +401,7 @@ class _ApiImagePickerState extends State<ApiImagePicker>
 
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

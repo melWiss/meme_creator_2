@@ -31,8 +31,8 @@ class MemeCreator extends StatefulWidget {
   final MemeTools memeController;
   final ScreenshotController screenshotController;
   MemeCreator({
-    @required this.memeController,
-    @required this.screenshotController,
+    required this.memeController,
+    required this.screenshotController,
   });
   @override
   _MemeCreatorState createState() => _MemeCreatorState();
@@ -44,8 +44,8 @@ class _MemeCreatorState extends State<MemeCreator> {
   GlobalKey canvasKey = GlobalKey();
   GlobalKey pickImageKey = GlobalKey();
   ScrollController scrollController = ScrollController();
-  MemeTools memeTools;
-  ScreenshotController screenshotController;
+  MemeTools? memeTools;
+  ScreenshotController? screenshotController;
 
   @override
   void initState() {
@@ -89,7 +89,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                   context,
                   (context) {
                     return StreamWidget<MemeData>(
-                      stream: memeTools.stream,
+                      stream: memeTools!.stream,
                       widget: (context, meme) => Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisSize: MainAxisSize.min,
@@ -130,7 +130,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                                               bottomSheet(
                                                 context,
                                                 (context) => memeTitleSheet(
-                                                    meme, memeTools),
+                                                    meme!, memeTools!),
                                               );
                                             },
                                           ),
@@ -147,9 +147,9 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                 "Add pictures from Device."),
                                             leading: Icon(Icons.image),
                                             onTap: () => addImagesFromDevice(
-                                                meme,
+                                                meme!,
                                                 screenSize.width,
-                                                memeTools),
+                                                memeTools!),
                                           ),
                                         ),
                                       ),
@@ -169,7 +169,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                                                 builder: (context) =>
                                                     floatingTextAlert(
                                                   canvasKey,
-                                                  meme,
+                                                  meme!,
                                                   context,
                                                   memeTools,
                                                 ),
@@ -194,7 +194,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                                               var size =
                                                   MediaQuery.of(context).size;
                                               var obj = pickImageKey
-                                                      .currentContext
+                                                      .currentContext!
                                                       .findRenderObject()
                                                   as RenderBox;
                                               var position = obj.localToGlobal(
@@ -240,17 +240,17 @@ class _MemeCreatorState extends State<MemeCreator> {
                                       title: Text("Padding"),
                                       leading: Icon(Icons.space_bar),
                                       subtitle: Slider(
-                                        value: memeTools.data.containerPadding,
+                                        value: memeTools!.data.containerPadding,
                                         divisions: 20,
-                                        label: memeTools.data.containerPadding
+                                        label: memeTools!.data.containerPadding
                                             .toInt()
                                             .toString(),
                                         max: 20,
                                         min: 0,
                                         onChanged: (value) {
-                                          meme.containerPadding = value;
-                                          memeTools.sinkMeme(
-                                              meme, screenSize.width);
+                                          meme!.containerPadding = value;
+                                          memeTools!
+                                              .sinkMeme(meme, screenSize.width);
                                         },
                                       ),
                                     ),
@@ -267,17 +267,17 @@ class _MemeCreatorState extends State<MemeCreator> {
                                       title: Text("Images Padding"),
                                       leading: Icon(Icons.image_aspect_ratio),
                                       subtitle: Slider(
-                                        value: memeTools.data.imagesPadding,
+                                        value: memeTools!.data.imagesPadding,
                                         divisions: 20,
-                                        label: memeTools.data.imagesPadding
+                                        label: memeTools!.data.imagesPadding
                                             .toInt()
                                             .toString(),
                                         max: 20,
                                         min: 0,
                                         onChanged: (value) {
-                                          meme.imagesPadding = value;
-                                          memeTools.sinkMeme(
-                                              meme, screenSize.width);
+                                          meme!.imagesPadding = value;
+                                          memeTools!
+                                              .sinkMeme(meme, screenSize.width);
                                         },
                                       ),
                                     ),
@@ -294,7 +294,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                                       leading: Icon(Icons.dashboard_rounded),
                                       title: Text("Border radius"),
                                       subtitle: Slider(
-                                        value: meme.borderRadius,
+                                        value: meme!.borderRadius,
                                         min: 0,
                                         max: 45,
                                         divisions: 45,
@@ -303,8 +303,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                             .toString(),
                                         onChanged: (value) {
                                           meme.borderRadius = value;
-                                          memeTools.sinkMeme(
-                                              meme, screenSize.width);
+                                          memeTools!
+                                              .sinkMeme(meme, screenSize.width);
                                         },
                                       ),
                                     ),
@@ -329,8 +329,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                             meme.imageHeight.toInt().toString(),
                                         onChanged: (value) {
                                           meme.imageHeight = value;
-                                          memeTools.sinkMeme(
-                                              meme, screenSize.width);
+                                          memeTools!
+                                              .sinkMeme(meme, screenSize.width);
                                         },
                                       ),
                                     ),
@@ -357,8 +357,8 @@ class _MemeCreatorState extends State<MemeCreator> {
                                           context,
                                           meme.memeBackgroundColor,
                                         );
-                                        memeTools.sinkMeme(
-                                            meme, screenSize.width);
+                                        memeTools!
+                                            .sinkMeme(meme, screenSize.width);
                                       },
                                     ),
                                   ),

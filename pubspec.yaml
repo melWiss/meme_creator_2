@@ -1,10 +1,10 @@
 name: meme_creator_2
 description: A new flutter plugin project.
-version: 2.0.1
+version: 2.0.2
 author:
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
   flutter: ">=1.20.0"
 
 dependencies:
@@ -15,7 +15,7 @@ dependencies:
   path:
   image: ^3.0.2
   multi_media_picker:
-    path: ../../Github/multi_media_picker
+    git: https://github.com/melWiss/multi_media_picker
   image_gallery_saver: ^1.6.9
   rxdart: ^0.27.0
   flex_color_picker: ^2.0.1

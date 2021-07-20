@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ScaleNavigation extends PageRouteBuilder {
-  final Widget child;
-  final Alignment alignment;
+  final Widget? child;
+  final Alignment? alignment;
   final int animationDuration;
   final double borderRadius;
   final Curve curve;
@@ -29,7 +29,7 @@ class ScaleNavigation extends PageRouteBuilder {
               ),
             );
             return ScaleTransition(
-              alignment: alignment,
+              alignment: alignment!,
               scale: animation,
               child: ClipRRect(
                 child: child,
@@ -40,7 +40,7 @@ class ScaleNavigation extends PageRouteBuilder {
             );
           },
           pageBuilder: (context, animation, secondaryAnimation) {
-            return child;
+            return child!;
           },
         );
 }

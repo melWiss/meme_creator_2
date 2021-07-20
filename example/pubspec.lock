@@ -143,7 +143,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.0.1"
+    version: "2.0.2"
   meta:
     dependency: transitive
     description:
@@ -154,9 +154,11 @@ packages:
   multi_media_picker:
     dependency: transitive
     description:
-      path: "../../../Github/multi_media_picker"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "39fb71fa5add0fa1d32cc3d894bd47d584d95308"
+      url: "https://github.com/melWiss/multi_media_picker"
+    source: git
     version: "0.2.5"
   path:
     dependency: transitive
