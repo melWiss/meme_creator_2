@@ -69,11 +69,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_web_plugins:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.0"
   http:
     dependency: "direct main"
     description:
@@ -95,20 +90,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.2"
-  image_save:
+  image_gallery_saver:
     dependency: "direct main"
     description:
-      name: image_save
+      name: image_gallery_saver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.1"
-  js:
-    dependency: transitive
-    description:
-      name: js
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.3"
+    version: "1.6.9"
   meta:
     dependency: transitive
     description:
@@ -119,12 +107,10 @@ packages:
   multi_media_picker:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: f5a31ad5c255be962bb19b0ed83bf11bbeb9445a
-      url: "https://github.com/ja2375/multi_media_picker"
-    source: git
-    version: "0.2.4"
+      path: "../../Github/multi_media_picker"
+      relative: true
+    source: path
+    version: "0.2.5"
   path:
     dependency: "direct main"
     description:
@@ -215,7 +201,7 @@ packages:
       name: screenshot
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0"
+    version: "1.2.3"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -256,27 +242,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  video_player:
-    dependency: transitive
-    description:
-      name: video_player
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.10.12+5"
-  video_player_platform_interface:
-    dependency: transitive
-    description:
-      name: video_player_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.2.0"
-  video_player_web:
-    dependency: transitive
-    description:
-      name: video_player_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.4+1"
   wc_flutter_share:
     dependency: "direct main"
     description:

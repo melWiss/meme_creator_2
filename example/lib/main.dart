@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -112,10 +114,11 @@ class _MemeScreenState extends State<MemeScreen> {
                       saveLoading = true;
                     });
                     var f = await screenshotController.capture();
-                    ImageSave.saveImage(f,
-                            "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.jpeg")
+                    Future.value(ImageGallerySaver.saveImage(f,
+                            name:
+                                "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.jpeg"))
                         .then((value) {
-                      if (value) {
+                      if (value['isSuccess']) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text("Meme saved Successfully!"),
@@ -176,10 +179,11 @@ class _MemeScreenState extends State<MemeScreen> {
                       shareLoading = true;
                     });
                     var f = await screenshotController.capture();
-                    ImageSave.saveImage(f,
-                            "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.jpeg")
+                    Future.value(ImageGallerySaver.saveImage(f,
+                            name:
+                                "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.jpeg"))
                         .then((value) {
-                      if (value) {
+                      if (value['isSuccess']) {
                         WcFlutterShare.share(
                           sharePopupTitle: "Share",
                           mimeType: "image/png",
