@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -9,18 +11,9 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
+class MyApp extends StatelessWidget {
   MemeTools memeController = MemeTools();
   ScreenshotController screenshotController = ScreenshotController();
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +58,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MemeScreen extends StatefulWidget {
-  const MemeScreen({Key key}) : super(key: key);
+  const MemeScreen({Key? key}) : super(key: key);
 
   @override
   _MemeScreenState createState() => _MemeScreenState();
@@ -111,11 +104,12 @@ class _MemeScreenState extends State<MemeScreen> {
                     setState(() {
                       saveLoading = true;
                     });
-                    var f = await screenshotController.capture();
-                    ImageSave.saveImage(f,
-                            "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.jpeg")
+                    var f = await (screenshotController.capture());
+                    Future.value(ImageGallerySaver.saveImage(f!,
+                            name:
+                                "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.png"))
                         .then((value) {
-                      if (value) {
+                      if (value['isSuccess']) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text("Meme saved Successfully!"),
@@ -175,11 +169,12 @@ class _MemeScreenState extends State<MemeScreen> {
                     setState(() {
                       shareLoading = true;
                     });
-                    var f = await screenshotController.capture();
-                    ImageSave.saveImage(f,
-                            "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.jpeg")
+                    var f = await (screenshotController.capture());
+                    Future.value(ImageGallerySaver.saveImage(f!,
+                            name:
+                                "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.png"))
                         .then((value) {
-                      if (value) {
+                      if (value['isSuccess']) {
                         WcFlutterShare.share(
                           sharePopupTitle: "Share",
                           mimeType: "image/png",

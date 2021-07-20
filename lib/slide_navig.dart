@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SlideNavigation extends PageRouteBuilder {
-  final Widget child;
-  final Alignment alignment;
+  final Widget? child;
+  final Alignment? alignment;
   final int animationDuration;
   final double borderRadius;
   final Curve curve;
@@ -40,7 +40,7 @@ class SlideNavigation extends PageRouteBuilder {
             );
           },
           pageBuilder: (context, animation, secondaryAnimation) {
-            return child;
+            return child!;
           },
         );
 }
