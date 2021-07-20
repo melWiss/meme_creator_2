@@ -264,9 +264,12 @@ Future bottomSheet(
     ),
     isScrollControlled: true,
     builder: (context) {
-      return Container(
-        height: MediaQuery.of(context).size.height * .5,
-        child: builder(context),
+      return Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: Container(
+          height: MediaQuery.of(context).size.height * .5,
+          child: builder(context),
+        ),
       );
     },
   );
@@ -319,10 +322,10 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                   textDirection: memeData['topTextDirection'],
                   decoration: InputDecoration(
                     hintText: "Caption #1",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
+                    // border: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   borderSide: BorderSide(color: Colors.black),
+                    // ),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10,
                     ),
@@ -343,10 +346,10 @@ Widget imageSheet(BuildContext context, Map<String, dynamic> memeData) {
                   // textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
                     hintText: "Caption #2",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
+                    // border: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   borderSide: BorderSide(color: Colors.black),
+                    // ),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10,
                     ),
@@ -738,10 +741,16 @@ Widget memeTitleSheet(MemeData meme) {
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
                     hintText: "Write the meme title here",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
+                    // border: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   borderSide: BorderSide(color: Colors.black),
+                    // ),
+                    // focusedBorder: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   borderSide: BorderSide(
+                    //     color: Theme.of(context).primaryColor,
+                    //   ),
+                    // ),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10,
                     ),
@@ -1046,10 +1055,10 @@ Widget floatingTextSheet(BuildContext context, MemeData meme, int index) {
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     hintText: "Write your text here",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
+                    // border: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   borderSide: BorderSide(color: Colors.black),
+                    // ),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10,
                     ),

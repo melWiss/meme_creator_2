@@ -82,11 +82,11 @@ class _ApiImagePickerState extends State<ApiImagePicker>
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  gapPadding: 0,
-                ),
-                labelText: 'Type some keywords here...',
+                // border: OutlineInputBorder(
+                //   borderRadius: BorderRadius.circular(5),
+                //   gapPadding: 0,
+                // ),
+                hintText: 'Type some keywords here...',
                 contentPadding: EdgeInsets.symmetric(horizontal: 5),
               ),
               onSubmitted: (value) {
@@ -245,7 +245,11 @@ class _ApiImagePickerState extends State<ApiImagePicker>
                             child: Text(
                                 "There's no meme that contain those keywords."),
                           ))
-                    : Center(child: CircularProgressIndicator()),
+                    : Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.purple,
+                        ),
+                      ),
                 !a9welsLoading
                     ? (a9welsmaps.where((element) {
                               if (keyword.isNotEmpty) {
@@ -377,7 +381,11 @@ class _ApiImagePickerState extends State<ApiImagePicker>
                             child: Text(
                                 "There's no meme that contain those Keywords"),
                           ))
-                    : Center(child: CircularProgressIndicator()),
+                    : Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.purple,
+                        ),
+                      ),
               ],
             ),
           ),
@@ -401,7 +409,9 @@ class LoadingScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.black38,
         body: Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Colors.purple,
+          ),
         ),
       ),
     );
