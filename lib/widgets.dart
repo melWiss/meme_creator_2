@@ -1,7 +1,7 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:meme_creator_2/tools.dart';
-import 'package:multi_media_picker/multi_media_picker.dart';
 import 'package:screenshot/screenshot.dart';
 //import 'package:image/image.dart' as img;
 
@@ -601,7 +601,9 @@ Widget imageSheet(
                                     meme.unexpandedImageHeight = null;
                                     memeTools.imageHeightOperation(
                                         meme, deviceWidth);
-                                    Navigator.of(context)..pop()..pop();
+                                    Navigator.of(context)
+                                      ..pop()
+                                      ..pop();
                                   },
                                   child: Text(
                                     'Delete',
@@ -953,70 +955,78 @@ Widget memeTitleSheet(MemeData meme, MemeTools memeTools) {
 
 Future<void> addImagesFromDevice(
     MemeData meme, double deviceWidth, MemeTools memeTools) async {
-  var fs = await (MultiMediaPicker.pickImages());
-  int i = 0;
-  fs!.forEach((element) {
-    meme.images.add({
-      'data': element.readAsBytesSync(),
-      'index': i,
-      'expanded': false,
-      'topText': '',
-      'bottomText': '',
-      'topTextDirection': TextDirection.ltr,
-      'bottomTextDirection': TextDirection.ltr,
-      'topTextAlignment': TextAlign.center,
-      'bottomTextAlignment': TextAlign.center,
-      'topTextStyle': TextStyle(
-        fontSize: 18,
-        color: Colors.white,
-        shadows: [
-          Shadow(
-            offset: Offset(1.12, 1.12),
-            color: Colors.black,
-          ),
-          Shadow(
-            offset: Offset(1.12, -1.12),
-            color: Colors.black,
-          ),
-          Shadow(
-            offset: Offset(-1.12, 1.12),
-            color: Colors.black,
-          ),
-          Shadow(
-            offset: Offset(-1.12, -1.12),
-            color: Colors.black,
-          ),
-        ],
-      ),
-      'bottomTextStyle': TextStyle(
-        fontSize: 18,
-        color: Colors.white,
-        shadows: [
-          Shadow(
-            offset: Offset(1.12, 1.12),
-            color: Colors.black,
-          ),
-          Shadow(
-            offset: Offset(1.12, -1.12),
-            color: Colors.black,
-          ),
-          Shadow(
-            offset: Offset(-1.12, 1.12),
-            color: Colors.black,
-          ),
-          Shadow(
-            offset: Offset(-1.12, -1.12),
-            color: Colors.black,
-          ),
-        ],
-      ),
+  // var fs = await (MultiMediaPicker.pickImages());
+  // var fs = controller.images;
+  var files = await FilePicker.platform.pickFiles(
+    type: FileType.image,
+    allowMultiple: true,
+    withData: true,
+  );
+  if (files != null) {
+    int i = 0;
+    files.files.forEach((element) {
+      meme.images.add({
+        'data': element.bytes,
+        'index': i,
+        'expanded': false,
+        'topText': '',
+        'bottomText': '',
+        'topTextDirection': TextDirection.ltr,
+        'bottomTextDirection': TextDirection.ltr,
+        'topTextAlignment': TextAlign.center,
+        'bottomTextAlignment': TextAlign.center,
+        'topTextStyle': TextStyle(
+          fontSize: 18,
+          color: Colors.white,
+          shadows: [
+            Shadow(
+              offset: Offset(1.12, 1.12),
+              color: Colors.black,
+            ),
+            Shadow(
+              offset: Offset(1.12, -1.12),
+              color: Colors.black,
+            ),
+            Shadow(
+              offset: Offset(-1.12, 1.12),
+              color: Colors.black,
+            ),
+            Shadow(
+              offset: Offset(-1.12, -1.12),
+              color: Colors.black,
+            ),
+          ],
+        ),
+        'bottomTextStyle': TextStyle(
+          fontSize: 18,
+          color: Colors.white,
+          shadows: [
+            Shadow(
+              offset: Offset(1.12, 1.12),
+              color: Colors.black,
+            ),
+            Shadow(
+              offset: Offset(1.12, -1.12),
+              color: Colors.black,
+            ),
+            Shadow(
+              offset: Offset(-1.12, 1.12),
+              color: Colors.black,
+            ),
+            Shadow(
+              offset: Offset(-1.12, -1.12),
+              color: Colors.black,
+            ),
+          ],
+        ),
+      });
+      i++;
     });
-    i++;
-  });
-  if (fs.length % 2 == 1)
-    meme.images[meme.images.length - 1]['expanded'] = true;
-  // memeTools.sinkMeme(meme!, deviceWidth);
-  memeTools.imageHeightOperation(meme, deviceWidth);
+    if (files.files.length % 2 == 1)
+      meme.images[meme.images.length - 1]['expanded'] = true;
+    // memeTools.sinkMeme(meme!, deviceWidth);
+    memeTools.imageHeightOperation(meme, deviceWidth);
+  }
 }
 
 Widget floatingTextSheet(

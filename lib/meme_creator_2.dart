@@ -15,7 +15,6 @@ export 'package:image_gallery_saver/image_gallery_saver.dart';
 // import 'package:image_save/image_save.dart';
 // export 'package:image_save/image_save.dart';
 import 'package:meme_creator_2/scale_navig.dart';
-import 'package:multi_media_picker/multi_media_picker.dart';
 import 'package:meme_creator_2/tools.dart';
 import 'package:meme_creator_2/widgets.dart';
 import 'package:screenshot/screenshot.dart';

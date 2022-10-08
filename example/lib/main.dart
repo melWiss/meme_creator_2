@@ -18,39 +18,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        primaryColor: Colors.purple,
-        accentColor: Colors.purple,
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: Colors.purple,
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.green,
         ),
-        textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.purple),
-        sliderTheme: SliderThemeData(
-          activeTrackColor: Colors.purple,
-          inactiveTrackColor: Colors.black12,
-          thumbColor: Colors.deepPurple,
-          overlayColor: Color(0x33673AB7),
-          valueIndicatorColor: Colors.purpleAccent,
-          inactiveTickMarkColor: Colors.transparent,
-          activeTickMarkColor: Colors.transparent,
-        ),
+        useMaterial3: true,
+      ).copyWith(
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.black),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(
-              color: Colors.purple,
               width: 2,
             ),
           ),
-          labelStyle: TextStyle(
-            color: Colors.purple,
-          ),
         ),
-        indicatorColor: Colors.purple,
       ),
       home: MemeScreen(),
     );
@@ -71,6 +55,7 @@ class _MemeScreenState extends State<MemeScreen> {
   bool shareLoading = false;
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size);
     return Scaffold(
       body: MemeCreator(
         memeController: memeController,
