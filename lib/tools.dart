@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
+
+import 'package:image/image.dart' as img;
 import 'package:rxdart/subjects.dart';
 
 import 'data.dart';
-import 'package:flutter/material.dart';
-import 'package:image/image.dart' as img;
 
 class MemeTools {
   MemeData _data = MemeData();

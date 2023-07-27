@@ -1,19 +1,20 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:meme_creator_2/meme_creator_2.dart';
 import 'package:meme_creator_2/tools.dart';
+import 'package:share_plus/share_plus.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MemeTools memeController = MemeTools();
-  ScreenshotController screenshotController = ScreenshotController();
+  final MemeTools memeController = MemeTools();
+  final ScreenshotController screenshotController = ScreenshotController();
 
   @override
   Widget build(BuildContext context) {
@@ -90,31 +91,36 @@ class _MemeScreenState extends State<MemeScreen> {
                       saveLoading = true;
                     });
                     var f = await (screenshotController.capture());
-                    Future.value(ImageGallerySaver.saveImage(f!,
-                            name:
-                                "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.png"))
+                    Future.value(platform.isMobile
+                            ? ImageGallerySaver.saveImage(f!,
+                                name:
+                                    "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.png")
+                            : FilePicker.platform.saveFile(
+                                fileName:
+                                    "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.png",
+                                type: FileType.image,
+                              ))
                         .then((value) {
-                      if (value['isSuccess']) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Meme saved Successfully!"),
-                            action: SnackBarAction(
-                              label: "Share",
-                              textColor: Theme.of(context).primaryColor,
-                              onPressed: () {
-                                WcFlutterShare.share(
-                                  sharePopupTitle: "Share",
-                                  mimeType: "image/png",
-                                  text: memeController.data.title,
-                                  subject: memeController.data.title,
-                                  bytesOfFile: f,
-                                  fileName: "meme.png",
-                                );
-                              },
-                            ),
-                          ),
-                        );
+                      if (platform.isDesktop) {
+                        File output = File(value);
+                        output.writeAsBytesSync(f!);
                       }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Meme saved Successfully!"),
+                          action: SnackBarAction(
+                            label: "Share",
+                            textColor: Theme.of(context).primaryColor,
+                            onPressed: () {
+                              Share.shareXFiles(
+                                [XFile.fromData(f!)],
+                                text: memeController.data.title,
+                                subject: memeController.data.title,
+                              );
+                            },
+                          ),
+                        ),
+                      );
                       setState(() {
                         saveLoading = false;
                       });
@@ -155,29 +161,36 @@ class _MemeScreenState extends State<MemeScreen> {
                       shareLoading = true;
                     });
                     var f = await (screenshotController.capture());
-                    Future.value(ImageGallerySaver.saveImage(f!,
-                            name:
-                                "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.png"))
-                        .then((value) {
-                      if (value['isSuccess']) {
-                        WcFlutterShare.share(
-                          sharePopupTitle: "Share",
-                          mimeType: "image/png",
+                    if (Platform.isAndroid)
+                      Future.value(platform.isMobile
+                              ? ImageGallerySaver.saveImage(f!,
+                                  name:
+                                      "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.png")
+                              : FilePicker.platform.saveFile(
+                                  fileName:
+                                      "MemeCreator2-${DateTime.now().millisecondsSinceEpoch}.png",
+                                  type: FileType.image,
+                                ))
+                          .then((value) {
+                        if (platform.isDesktop) {
+                          File output = File(value);
+                          output.writeAsBytesSync(f!);
+                        }
+                        Share.shareXFiles(
+                          [XFile.fromData(f!)],
                           text: memeController.data.title,
                           subject: memeController.data.title,
-                          bytesOfFile: f,
-                          fileName: "meme.png",
                         );
-                      }
-                      setState(() {
-                        shareLoading = false;
+
+                        setState(() {
+                          shareLoading = false;
+                        });
+                      }).catchError((onError) {
+                        debugPrint(onError);
+                        setState(() {
+                          shareLoading = false;
+                        });
                       });
-                    }).catchError((onError) {
-                      debugPrint(onError);
-                      setState(() {
-                        shareLoading = false;
-                      });
-                    });
                   }
                 }
               },
@@ -188,3 +201,18 @@ class _MemeScreenState extends State<MemeScreen> {
     );
   }
 }
+
+extension PlatformAbstraction on Platform {
+  bool get isDesktop =>
+      Platform.isFuchsia ||
+      Platform.isLinux ||
+      Platform.isWindows ||
+      Platform.isMacOS;
+
+  bool get isMobile =>
+      Platform.isFuchsia || Platform.isAndroid || Platform.isIOS;
+
+  bool get isWeb => kIsWeb;
+}
+
+Platform platform = Platform();

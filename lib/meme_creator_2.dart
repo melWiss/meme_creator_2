@@ -3,28 +3,19 @@
 // To add platforms, run `flutter create -t plugin --platforms <platforms> .` under the same
 // directory. You can also find a detailed instruction on how to add platforms in the `pubspec.yaml` at https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms.
 
-import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-export 'package:image_gallery_saver/image_gallery_saver.dart';
-// import 'package:image_save/image_save.dart';
-// export 'package:image_save/image_save.dart';
-import 'package:meme_creator_2/scale_navig.dart';
 import 'package:meme_creator_2/tools.dart';
 import 'package:meme_creator_2/widgets.dart';
 import 'package:screenshot/screenshot.dart';
-export 'package:screenshot/screenshot.dart';
-import 'package:wc_flutter_share/wc_flutter_share.dart';
-export 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'api_image_picker.dart';
 import 'data.dart';
 import 'slide_navig.dart';
+
+export 'package:file_picker/file_picker.dart';
+export 'package:screenshot/screenshot.dart';
 
 class MemeCreator extends StatefulWidget {
   final MemeTools memeController;
@@ -43,6 +34,7 @@ class _MemeCreatorState extends State<MemeCreator> {
   GlobalKey canvasKey = GlobalKey();
   GlobalKey pickImageKey = GlobalKey();
   ScrollController scrollController = ScrollController();
+  ScrollController headerScrollController = ScrollController();
   MemeTools? memeTools;
   ScreenshotController? screenshotController;
 
@@ -98,7 +90,7 @@ class _MemeCreatorState extends State<MemeCreator> {
                             child: Text(
                               "Tools",
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headline4,
+                              style: Theme.of(context).textTheme.headlineMedium,
                             ),
                           ),
                           Divider(
@@ -110,122 +102,134 @@ class _MemeCreatorState extends State<MemeCreator> {
                           Expanded(
                             child: ListView(
                               children: [
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                .6,
-                                        child: listTileMaterial(
-                                          ListTile(
-                                            title: Text("Meme Title"),
-                                            subtitle: Text(
-                                                "A text that is shown at the top."),
-                                            leading:
-                                                Icon(Icons.article_outlined),
-                                            onTap: () {
-                                              bottomSheet(
-                                                context,
-                                                (context) => memeTitleSheet(
-                                                    meme!, memeTools!),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                .6,
-                                        child: listTileMaterial(
-                                          ListTile(
-                                            title: Text("Add Pictures"),
-                                            subtitle: Text(
-                                                "Add pictures from Device."),
-                                            leading: Icon(Icons.image),
-                                            onTap: () => addImagesFromDevice(
-                                                meme!,
-                                                screenSize.width,
-                                                memeTools!),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                .6,
-                                        child: listTileMaterial(
-                                          ListTile(
-                                            title: Text("Floating Text"),
-                                            subtitle: Text(
-                                                "A text that you can drag and drop."),
-                                            leading: Icon(Icons.article),
-                                            onTap: () async {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    floatingTextAlert(
-                                                  canvasKey,
-                                                  meme!,
+                                Scrollbar(
+                                  thumbVisibility: true,
+                                  scrollbarOrientation:
+                                      ScrollbarOrientation.bottom,
+                                  controller: headerScrollController,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    controller: headerScrollController,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .6,
+                                          child: listTileMaterial(
+                                            ListTile(
+                                              title: Text("Meme Title"),
+                                              subtitle: Text(
+                                                  "A text that is shown at the top."),
+                                              leading:
+                                                  Icon(Icons.article_outlined),
+                                              onTap: () {
+                                                bottomSheet(
                                                   context,
-                                                  memeTools,
-                                                ),
-                                              );
-                                            },
+                                                  (context) => memeTitleSheet(
+                                                      meme!, memeTools!),
+                                                );
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                .6,
-                                        child: listTileMaterial(
-                                          ListTile(
-                                            key: pickImageKey,
-                                            title: Text("Pick Image"),
-                                            subtitle: Text(
-                                                "Pick images from the Internet"),
-                                            leading:
-                                                Icon(Icons.add_photo_alternate),
-                                            onTap: () {
-                                              var size =
-                                                  MediaQuery.of(context).size;
-                                              var obj = pickImageKey
-                                                      .currentContext!
-                                                      .findRenderObject()
-                                                  as RenderBox;
-                                              var position = obj.localToGlobal(
-                                                Offset.zero,
-                                              );
-                                              debugPrint(position.toString());
-                                              debugPrint(size.toString());
-                                              debugPrint(obj.size.toString());
-                                              Navigator.of(context).push(
-                                                SlideNavigation(
-                                                  child: ApiImagePicker(
-                                                    memeController: memeTools,
-                                                  ),
-                                                  // borderRadius: 40,
-                                                  curve: Curves.elasticOut,
-                                                  reverseCurve:
-                                                      Curves.easeInExpo,
-                                                  alignment: Alignment(
-                                                    position.dx / size.width,
-                                                    (position.dy -
-                                                            obj.size.height *
-                                                                3.3) /
-                                                        size.height,
-                                                  ),
-                                                  animationDuration: 650,
-                                                ),
-                                              );
-                                            },
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .6,
+                                          child: listTileMaterial(
+                                            ListTile(
+                                              title: Text("Add Pictures"),
+                                              subtitle: Text(
+                                                  "Add pictures from Device."),
+                                              leading: Icon(Icons.image),
+                                              onTap: () => addImagesFromDevice(
+                                                  meme!,
+                                                  screenSize.width,
+                                                  memeTools!),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .6,
+                                          child: listTileMaterial(
+                                            ListTile(
+                                              title: Text("Floating Text"),
+                                              subtitle: Text(
+                                                  "A text that you can drag and drop."),
+                                              leading: Icon(Icons.article),
+                                              onTap: () async {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      floatingTextAlert(
+                                                    canvasKey,
+                                                    meme!,
+                                                    context,
+                                                    memeTools,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .6,
+                                          child: listTileMaterial(
+                                            ListTile(
+                                              key: pickImageKey,
+                                              title: Text("Pick Image"),
+                                              subtitle: Text(
+                                                  "Pick images from the Internet"),
+                                              leading: Icon(
+                                                  Icons.add_photo_alternate),
+                                              onTap: () {
+                                                var size =
+                                                    MediaQuery.of(context).size;
+                                                var obj = pickImageKey
+                                                        .currentContext!
+                                                        .findRenderObject()
+                                                    as RenderBox;
+                                                var position =
+                                                    obj.localToGlobal(
+                                                  Offset.zero,
+                                                );
+                                                debugPrint(position.toString());
+                                                debugPrint(size.toString());
+                                                debugPrint(obj.size.toString());
+                                                Navigator.of(context).push(
+                                                  SlideNavigation(
+                                                    child: ApiImagePicker(
+                                                      memeController: memeTools,
+                                                    ),
+                                                    // borderRadius: 40,
+                                                    curve: Curves.elasticOut,
+                                                    reverseCurve:
+                                                        Curves.easeInExpo,
+                                                    alignment: Alignment(
+                                                      position.dx / size.width,
+                                                      (position.dy -
+                                                              obj.size.height *
+                                                                  3.3) /
+                                                          size.height,
+                                                    ),
+                                                    animationDuration: 650,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 Padding(

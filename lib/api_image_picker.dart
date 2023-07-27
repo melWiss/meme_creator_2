@@ -1,13 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' show get;
 import 'package:meme_creator_2/data.dart';
-import 'package:meme_creator_2/meme_creator_2.dart';
 import 'package:meme_creator_2/tools.dart';
 import 'package:meme_creator_2/widgets.dart';
-import 'package:path/path.dart';
-import 'package:http/http.dart' show get;
-import 'package:image/image.dart' as img;
+import 'package:path/path.dart' show join;
 
 class ApiImagePicker extends StatefulWidget {
   final MemeTools? memeController;
@@ -18,7 +16,9 @@ class ApiImagePicker extends StatefulWidget {
 
 class _ApiImagePickerState extends State<ApiImagePicker>
     with SingleTickerProviderStateMixin {
-  static const base = 'https://elwiss-io-meme.herokuapp.com';
+  // static const base = 'http://localhost:8000';
+  // static const base = 'https://elwiss-io-meme.herokuapp.com';
+  static const base = 'https://meme-server.deno.dev';
   List<String> chosenUrls = [];
   List<Map> memesUrls = [];
   List<Map> searchedMemesUrls = [];
@@ -35,42 +35,74 @@ class _ApiImagePickerState extends State<ApiImagePicker>
     super.initState();
     memeTools = widget.memeController;
     tabController = TabController(length: 2, vsync: this);
-    get(Uri.parse(join(base, 'api', 'images'))).then((value) {
-      List l = jsonDecode(value.body);
-      l.forEach((element) {
+    // get(Uri.parse(join(base, 'api', 'images'))).then((value) {
+    //   List l = jsonDecode(value.body);
+    //   l.forEach((element) {
+    //     memesUrls.add({
+    //       'path': base + element['image'],
+    //       'name': (element['image'] as String)
+    //           .split('/')[element['image'].split('/').length - 1]
+    //           .substring(
+    //               0,
+    //               element['image']
+    //                   .split('/')[element['image'].split('/').length - 1]
+    //                   .indexOf('.jpeg')),
+    //     });
+    //   });
+    //   setState(() {
+    //     memesLoading = false;
+    //   });
+    // }).catchError((err) {
+    //   debugPrint(err);
+    // });
+    _fetchImages().then((value) => setState(() => memesLoading = false));
+    // get(Uri.parse(join(base, 'api', 'a9wels'))).then((value) {
+    //   List l = jsonDecode(value.body);
+    //   l.forEach((els) {
+    //     (els as List).forEach((element) {
+    //       a9welsmaps.add({
+    //         'path': element['path'],
+    //         'name': element['index'].toString(),
+    //       });
+    //     });
+    //   });
+    //   setState(() {
+    //     a9welsLoading = false;
+    //   });
+    // }).catchError((err) {
+    //   debugPrint(err);
+    // });
+  }
+
+  Future<void> _fetchImages() async {
+    try {
+      var response = await get(Uri.parse(join(base, 'api', 'images')));
+      var data = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+      for (var meme in data) {
         memesUrls.add({
-          'path': base + element,
-          'name': (element as String)
-              .split('/')[element.split('/').length - 1]
+          'path': base + meme['image'],
+          'name': (meme['image'] as String)
+              .split('/')[meme['image'].split('/').length - 1]
               .substring(
                   0,
-                  element
-                      .split('/')[element.split('/').length - 1]
+                  meme['image']
+                      .split('/')[meme['image'].split('/').length - 1]
                       .indexOf('.jpeg')),
         });
-      });
-      setState(() {
-        memesLoading = false;
-      });
-    }).catchError((err) {
-      debugPrint(err);
-    });
-    get(Uri.parse(join(base, 'api', 'a9wels'))).then((value) {
-      List l = jsonDecode(value.body);
-      l.forEach((els) {
-        (els as List).forEach((element) {
-          a9welsmaps.add({
-            'path': element['path'],
-            'name': element['index'].toString(),
-          });
-        });
-      });
-      setState(() {
-        a9welsLoading = false;
-      });
-    }).catchError((err) {
-      debugPrint(err);
-    });
+      }
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Couldn't fetch pictures.",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.black,
+        ),
+      );
+    }
   }
 
   @override
@@ -100,298 +132,140 @@ class _ApiImagePickerState extends State<ApiImagePicker>
               },
             ),
           ),
-          TabBar(
-            labelColor: Theme.of(context).primaryColor,
-            unselectedLabelColor: Colors.black87,
-            indicatorColor: Theme.of(context).primaryColor,
-            controller: tabController,
-            tabs: [
-              Tab(
-                text: 'Traditional Memes',
-              ),
-              Tab(
-                text: 'A9wel Mdablja',
-              ),
-            ],
-          ),
           Expanded(
-            child: TabBarView(
-              controller: tabController,
-              children: [
-                !memesLoading
-                    ? (memesUrls.where((element) {
-                              if (keyword.isNotEmpty) {
-                                for (var k
-                                    in keyword.toUpperCase().split(' ')) {
-                                  if ((element['name'] as String)
-                                      .toUpperCase()
-                                      .contains(k)) return true;
-                                }
-                                return false;
-                              } else {
-                                return true;
-                              }
-                            }).length !=
-                            0
-                        ? GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                            ),
-                            itemCount: memesUrls.where((element) {
-                              if (keyword.isNotEmpty) {
-                                for (var k
-                                    in keyword.toUpperCase().split(' ')) {
-                                  if ((element['name'] as String)
-                                      .toUpperCase()
-                                      .contains(k)) return true;
-                                }
-                                return false;
-                              } else {
-                                return true;
-                              }
-                            }).length,
-                            itemBuilder: (context, index) {
-                              var memes = memesUrls.where((element) {
-                                if (keyword.isNotEmpty) {
-                                  for (var k
-                                      in keyword.toUpperCase().split(' ')) {
-                                    if ((element['name'] as String)
-                                        .toUpperCase()
-                                        .contains(k)) return true;
-                                  }
-                                  return false;
-                                } else {
-                                  return true;
-                                }
-                              }).toList();
-                              return Padding(
-                                padding: const EdgeInsets.all(3.0),
-                                child: NewsCard(
-                                  description: memes[index]['name'],
-                                  descriptionLines: 1,
-                                  imgurl: memes[index]['path'],
-                                  onTap: () async {
-                                    Navigator.of(context).push(PageRouteBuilder(
-                                      opaque: false,
-                                      pageBuilder: (context, animation,
-                                              secondaryAnimation) =>
-                                          LoadingScreen(),
-                                    ));
-                                    MemeData m = memeTools!.data;
-                                    int i = m.images.length;
-                                    var response = await get(
-                                        Uri.parse(memes[index]['path']));
-                                    m.images.add({
-                                      'data': response.bodyBytes,
-                                      'index': i,
-                                      'expanded': true,
-                                      'topText': '',
-                                      'bottomText': '',
-                                      'topTextDirection': TextDirection.ltr,
-                                      'bottomTextDirection': TextDirection.ltr,
-                                      'topTextAlignment': TextAlign.center,
-                                      'bottomTextAlignment': TextAlign.center,
-                                      'topTextStyle': TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            offset: Offset(1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                        ],
-                                      ),
-                                      'bottomTextStyle': TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            offset: Offset(1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                        ],
-                                      ),
-                                    });
-                                    memeTools!.imageHeightOperation(
-                                        m, deviceWidth);
-                                    Navigator.of(context)..pop()..pop();
-                                  },
-                                ),
-                              );
-                            },
-                          )
-                        : Center(
-                            child: Text(
-                                "There's no meme that contain those keywords."),
-                          ))
-                    : Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.purple,
+            child: !memesLoading
+                ? (memesUrls.where((element) {
+                          if (keyword.isNotEmpty) {
+                            for (var k in keyword.toUpperCase().split(' ')) {
+                              if ((element['name'] as String)
+                                  .toUpperCase()
+                                  .contains(k)) return true;
+                            }
+                            return false;
+                          } else {
+                            return true;
+                          }
+                        }).length !=
+                        0
+                    ? GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
                         ),
-                      ),
-                !a9welsLoading
-                    ? (a9welsmaps.where((element) {
-                              if (keyword.isNotEmpty) {
-                                for (var k
-                                    in keyword.toUpperCase().split(' ')) {
-                                  if ((element['name'] as String)
-                                      .toUpperCase()
-                                      .contains(k)) return true;
-                                }
-                                return false;
-                              } else {
-                                return true;
+                        itemCount: memesUrls.where((element) {
+                          if (keyword.isNotEmpty) {
+                            for (var k in keyword.toUpperCase().split(' ')) {
+                              if ((element['name'] as String)
+                                  .toUpperCase()
+                                  .contains(k)) return true;
+                            }
+                            return false;
+                          } else {
+                            return true;
+                          }
+                        }).length,
+                        itemBuilder: (context, index) {
+                          var memes = memesUrls.where((element) {
+                            if (keyword.isNotEmpty) {
+                              for (var k in keyword.toUpperCase().split(' ')) {
+                                if ((element['name'] as String)
+                                    .toUpperCase()
+                                    .contains(k)) return true;
                               }
-                            }).length !=
-                            0
-                        ? GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
+                              return false;
+                            } else {
+                              return true;
+                            }
+                          }).toList();
+                          return Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: NewsCard(
+                              description: memes[index]['name'],
+                              descriptionLines: 1,
+                              imgurl: memes[index]['path'],
+                              onTap: () async {
+                                Navigator.of(context).push(PageRouteBuilder(
+                                  opaque: false,
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      LoadingScreen(),
+                                ));
+                                MemeData m = memeTools!.data;
+                                int i = m.images.length;
+                                var response =
+                                    await get(Uri.parse(memes[index]['path']));
+                                m.images.add({
+                                  'data': response.bodyBytes,
+                                  'index': i,
+                                  'expanded': true,
+                                  'topText': '',
+                                  'bottomText': '',
+                                  'topTextDirection': TextDirection.ltr,
+                                  'bottomTextDirection': TextDirection.ltr,
+                                  'topTextAlignment': TextAlign.center,
+                                  'bottomTextAlignment': TextAlign.center,
+                                  'topTextStyle': TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    shadows: [
+                                      Shadow(
+                                        offset: Offset(1.12, 1.12),
+                                        color: Colors.black,
+                                      ),
+                                      Shadow(
+                                        offset: Offset(1.12, -1.12),
+                                        color: Colors.black,
+                                      ),
+                                      Shadow(
+                                        offset: Offset(-1.12, 1.12),
+                                        color: Colors.black,
+                                      ),
+                                      Shadow(
+                                        offset: Offset(-1.12, -1.12),
+                                        color: Colors.black,
+                                      ),
+                                    ],
+                                  ),
+                                  'bottomTextStyle': TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    shadows: [
+                                      Shadow(
+                                        offset: Offset(1.12, 1.12),
+                                        color: Colors.black,
+                                      ),
+                                      Shadow(
+                                        offset: Offset(1.12, -1.12),
+                                        color: Colors.black,
+                                      ),
+                                      Shadow(
+                                        offset: Offset(-1.12, 1.12),
+                                        color: Colors.black,
+                                      ),
+                                      Shadow(
+                                        offset: Offset(-1.12, -1.12),
+                                        color: Colors.black,
+                                      ),
+                                    ],
+                                  ),
+                                });
+                                memeTools!.imageHeightOperation(m, deviceWidth);
+                                Navigator.of(context)
+                                  ..pop()
+                                  ..pop();
+                              },
                             ),
-                            itemCount: a9welsmaps.where((element) {
-                              if (keyword.isNotEmpty) {
-                                for (var k
-                                    in keyword.toUpperCase().split(' ')) {
-                                  if ((element['name'] as String)
-                                      .toUpperCase()
-                                      .contains(k)) return true;
-                                }
-                                return false;
-                              } else {
-                                return true;
-                              }
-                            }).length,
-                            itemBuilder: (context, index) {
-                              var memes = a9welsmaps.where((element) {
-                                if (keyword.isNotEmpty) {
-                                  for (var k
-                                      in keyword.toUpperCase().split(' ')) {
-                                    if ((element['name'] as String)
-                                        .toUpperCase()
-                                        .contains(k)) return true;
-                                  }
-                                  return false;
-                                } else {
-                                  return true;
-                                }
-                              }).toList();
-                              return Padding(
-                                padding: const EdgeInsets.all(3.0),
-                                child: NewsCard(
-                                  description: memes[index]['name'],
-                                  descriptionLines: 1,
-                                  imgurl: memes[index]['path'],
-                                  onTap: () async {
-                                    Navigator.of(context).push(PageRouteBuilder(
-                                      opaque: false,
-                                      pageBuilder: (context, animation,
-                                              secondaryAnimation) =>
-                                          LoadingScreen(),
-                                    ));
-                                    MemeData m = memeTools!.data;
-                                    int i = m.images.length;
-                                    var response = await get(
-                                        Uri.parse(memes[index]['path']));
-                                    m.images.add({
-                                      'data': response.bodyBytes,
-                                      'index': i,
-                                      'expanded': true,
-                                      'topText': '',
-                                      'bottomText': '',
-                                      'topTextDirection': TextDirection.ltr,
-                                      'bottomTextDirection': TextDirection.ltr,
-                                      'topTextAlignment': TextAlign.center,
-                                      'bottomTextAlignment': TextAlign.center,
-                                      'topTextStyle': TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            offset: Offset(1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                        ],
-                                      ),
-                                      'bottomTextStyle': TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            offset: Offset(1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, 1.12),
-                                            color: Colors.black,
-                                          ),
-                                          Shadow(
-                                            offset: Offset(-1.12, -1.12),
-                                            color: Colors.black,
-                                          ),
-                                        ],
-                                      ),
-                                    });
-                                    memeTools!.imageHeightOperation(
-                                        m, deviceWidth);
-                                    Navigator.of(context)..pop()..pop();
-                                  },
-                                ),
-                              );
-                            },
-                          )
-                        : Center(
-                            child: Text(
-                                "There's no meme that contain those Keywords"),
-                          ))
+                          );
+                        },
+                      )
                     : Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.purple,
-                        ),
-                      ),
-              ],
-            ),
+                        child: Text(
+                            "There's no meme that contain those keywords."),
+                      ))
+                : Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.purple,
+                    ),
+                  ),
           ),
         ],
       ),

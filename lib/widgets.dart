@@ -3,6 +3,7 @@ import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:meme_creator_2/tools.dart';
 import 'package:screenshot/screenshot.dart';
+
 //import 'package:image/image.dart' as img;
 
 import 'data.dart';
@@ -302,7 +303,7 @@ Widget imageSheet(
           child: Text(
             "Edit Captions",
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
         Divider(
@@ -724,7 +725,7 @@ Widget memeTitleSheet(MemeData meme, MemeTools memeTools) {
             child: Text(
               "Meme Title",
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ),
           Divider(
@@ -1048,7 +1049,7 @@ Widget floatingTextSheet(
           child: Text(
             "Edit Floating Text",
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
         Divider(

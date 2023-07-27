@@ -11,6 +11,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  share_plus: "6.3.4"
+  image_gallery_saver: "1.7.1"
+  
 
   meme_creator_2:
     # When depending on this package from a real application you should use:
